@@ -1,5 +1,26 @@
 # Core Java Interview Preparation Guide 2026
 
+## Index
+
+1. Introduction to Java  
+2. Features of Java  
+3. JDK, JRE, and JVM  
+4. Program Structure and Main Method  
+5. Data Types and Variables  
+6. Type Casting  
+7. Variable Scope and Lifetime  
+8. Final Variables  
+9. Operators in Java  
+10. Control Flow – Conditional Statements  
+11. Loops  
+12. Interview Quick Reference & Common Traps  
+13. Practice Scenarios & Edge Cases  
+14. Time Complexity Considerations for Interviews  
+15. Coding Best Practices for Interviews  
+16. Experienced-Level Interview Questions (4+ Years)
+
+---
+
 ## Part 1: Introduction to Java
 
 ### What is Java?
@@ -1036,7 +1057,7 @@ do {
 | do-while | When first execution guaranteed | Executed once |
 | for-each | Iterating over collections | No |
 
-### 2. **Break Statement**
+### Break Statement
 
 ```java
 // Break in for loop
@@ -1071,7 +1092,7 @@ for (int i = 0; i < 3; i++) {
 }
 ```
 
-### 3. **Continue Statement**
+### Continue Statement
 
 ```java
 // Continue skips to next iteration
@@ -1095,7 +1116,7 @@ while (i < 5) {
 // Output: 1 2 4 5
 ```
 
-### 4. **Labeled Statements**
+### Labeled Statements
 
 ```java
 // Labeled break (breaks outer loop)
@@ -1390,36 +1411,72 @@ int finalPrice = basePrice * TAX_RATE;  // Apply tax for total price
 
 ---
 
-## Summary Checklist for Interview
+## Part 16: Experienced-Level Interview Questions (4+ Years)
 
-- [ ] Understand WORA principle and how JVM enables it
-- [ ] Clearly explain difference between JDK, JRE, JVM
-- [ ] Know all 8 primitive types, their sizes, and ranges
-- [ ] Master widening (auto) vs narrowing (manual) casting
-- [ ] Understand variable scope: local, parameter, instance, static
-- [ ] Know final variable initialization rules
-- [ ] Be proficient with all operators and precedence
-- [ ] Understand control flow: if-else, switch, loops
-- [ ] Know break, continue, and labeled statements
-- [ ] Remember common traps and edge cases
-- [ ] Practice writing clean, efficient code
-- [ ] Be ready to discuss real-world applications
+### 16.1 Core Language and Memory
+
+**Q1. Explain Java's memory model: heap vs stack vs metaspace. When does an object become eligible for garbage collection?**  
+A: Local variables and references live on the stack, objects live on the heap, and class metadata is stored in metaspace. An object becomes eligible for GC when no live thread can reach it through any chain of references, including static fields and thread-local references.
+
+**Q2. Is Java pass-by-value or pass-by-reference? Give an example that confuses people.**  
+A: Java is strictly pass-by-value. For objects, the value being passed is the reference, so both caller and callee see the same underlying object, but reassigning the parameter in the method does not change the caller's reference. This confuses people when trying to swap two `Integer` or `String` references inside a method.
+
+**Q3. How would you diagnose and fix a `java.lang.OutOfMemoryError` in production?**  
+A: Identify the space (heap, metaspace, direct memory) from the error or logs, capture a heap dump using `jmap` or JVM flags, and analyze with tools like Eclipse MAT or VisualVM to find leak suspects. Fix by removing unintended strong references and introducing bounds/eviction policies.
 
 ---
 
-## Additional Resources for Deep Dive
+### 16.2 Collections and Generics
 
-**Topics to explore further:**
-- Wrapper classes and autoboxing/unboxing
-- Immutable objects and String pool
-- Pass-by-value semantics in Java
-- Memory model and garbage collection
-- Method overloading rules and ambiguity resolution
-- Object class and its methods (equals, hashCode, toString)
+**Q4. Internal differences between `ArrayList` and `LinkedList`. When would you prefer one over the other?**  
+A: `ArrayList` uses a dynamic array (O(1) random access, O(n) middle insertions), while `LinkedList` is doubly-linked (O(1) iterator operations, O(n) random access). `ArrayList` is usually preferred; `LinkedList` is rarely better unless you have specific patterns.
 
-**Keep practicing:** GitHub, LeetCode Easy problems, HackerRank Java challenges
+**Q5. What is the difference between `HashMap`, `LinkedHashMap`, and `TreeMap`?**  
+A: `HashMap` has O(1) average operations with no ordering. `LinkedHashMap` preserves insertion/access order. `TreeMap` keeps keys sorted with O(log n) operations. Choice depends on ordering needs and complexity expectations.
+
+**Q6. Explain type erasure in generics and a pitfall it causes.**  
+A: Generic type information exists only at compile time and is erased at runtime, so `List<String>` and `List<Integer>` both appear as `List`. This prevents `instanceof List<String>` and can cause heap pollution when mixing raw and parameterized types.
+
+---
+
+### 16.3 Concurrency Basics
+
+**Q7. What problems do `volatile` and `synchronized` solve? Can `volatile` replace `synchronized`?**  
+A: `volatile` ensures visibility and ordering for a single variable; `synchronized` ensures mutual exclusion and happens-before relationships for all variables in the block. `volatile` cannot replace `synchronized` for compound operations like `count++`.
+
+**Q8. Explain thread safety for collections. When use `Collections.synchronizedList` vs `CopyOnWriteArrayList`?**  
+A: `Collections.synchronizedList` uses a single lock for all operations. `CopyOnWriteArrayList` copies on write, making reads fast and lock-free. Use synchronized for mixed workloads, copy-on-write for read-heavy scenarios.
+
+**Q9. How does `ThreadLocal` work, and where can it cause memory leaks?**  
+A: Each thread maintains a map of `ThreadLocal` instances to values. In thread pools, failing to clear `ThreadLocal` values causes long-lived worker threads to retain references, leading to memory leaks. Always remove when done.
+
+---
+
+### 16.4 Exceptions, Design, and Best Practices
+
+**Q10. How do you design your own exception hierarchy in a large codebase?**  
+A: Define a small base custom exception, derive domain-specific exceptions beneath it, and translate lower-level technical exceptions into domain ones at module boundaries. Avoid throwing generic `Exception` from public APIs.
+
+**Q11. When choose checked vs unchecked exception?**  
+A: Use checked exceptions for recoverable conditions the caller should handle. Use unchecked exceptions for programming errors or unrecoverable situations where forcing handling adds noise.
+
+**Q12. How do you ensure immutability of a class, and why is it useful?**  
+A: Use `private final` fields, no setters, full initialization in constructor, and defensive copies for mutable inputs/outputs. Immutable objects are thread-safe, easier to reason about, and ideal as cache keys.
+
+---
+
+### 16.5 Practical Coding / Scenario Questions (4+ Years)
+
+**Q13. Given a large list of integers, how would you find the top 10 numbers efficiently?**  
+A: Maintain a min-heap (priority queue) of size 10: iterate once, push elements, and pop when size exceeds 10. This gives O(n log 10) ≈ O(n) complexity. Alternative: full sort for O(n log n), acceptable for smaller inputs.
+
+**Q14. How would you design a retry utility with exponential backoff? What do you consider?**  
+A: Accept a functional interface, configure max retries and base delay, implement retries with increasing sleep times and optional jitter to avoid thundering herd. Consider which exceptions are retryable, honor thread interrupts, and limit max backoff.
+
+**Q15. You see high CPU and long GC pauses in a Java service. Outline your approach.**  
+A: Inspect GC logs and flags for collector type and pause patterns. Use profilers or thread dumps for hotspots or stuck threads. Look for excessive allocations and unbounded caches. Tune heap/GC settings and reduce allocations.
 
 ---
 
 **Last Updated:** February 2026  
-**Prepared for:** Core Java Interview Preparation
+**Prepared for:** Core Java Interview Preparation (4+ Years Experience Focus)
