@@ -1,0 +1,1414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Java Stream API — Top 10 Interview Questions</title>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #070b14;
+  --surface: #0c1220;
+  --card: #101827;
+  --card2: #0e1520;
+  --border: #1a2540;
+  --border2: #243050;
+  --cyan: #22d3ee;
+  --violet: #818cf8;
+  --emerald: #34d399;
+  --amber: #fbbf24;
+  --rose: #fb7185;
+  --sky: #38bdf8;
+  --text: #e2e8f0;
+  --text2: #94a3b8;
+  --text3: #64748b;
+  --code-bg: #060a12;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Plus Jakarta Sans',sans-serif;
+  line-height:1.7;
+  overflow-x:hidden;
+}
+
+/* Ambient glow blobs */
+body::before{
+  content:'';
+  position:fixed;
+  top:-200px; left:-200px;
+  width:600px; height:600px;
+  background:radial-gradient(circle, rgba(34,211,238,0.04) 0%, transparent 70%);
+  pointer-events:none; z-index:0;
+}
+body::after{
+  content:'';
+  position:fixed;
+  bottom:-200px; right:-200px;
+  width:700px; height:700px;
+  background:radial-gradient(circle, rgba(129,140,248,0.05) 0%, transparent 70%);
+  pointer-events:none; z-index:0;
+}
+
+.page{ position:relative; z-index:1; max-width:1000px; margin:0 auto; padding:52px 24px 100px; }
+
+/* ── HERO ── */
+.hero{ text-align:center; margin-bottom:64px; }
+
+.hero-badge{
+  display:inline-flex; align-items:center; gap:8px;
+  background:linear-gradient(135deg, rgba(34,211,238,0.12), rgba(129,140,248,0.12));
+  border:1px solid rgba(34,211,238,0.25);
+  color:var(--cyan); font-family:'Fira Code',monospace;
+  font-size:11px; font-weight:600; letter-spacing:2.5px; text-transform:uppercase;
+  padding:8px 20px; border-radius:100px; margin-bottom:28px;
+}
+.hero-badge::before{ content:'⚡'; }
+
+.hero h1{
+  font-size:clamp(36px,6vw,60px); font-weight:800;
+  letter-spacing:-2px; line-height:1.05; margin-bottom:20px;
+  background:linear-gradient(135deg, #fff 20%, var(--cyan) 55%, var(--violet) 90%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+}
+
+.hero-sub{ color:var(--text2); font-size:15px; max-width:560px; margin:0 auto 32px; line-height:1.8; }
+
+/* Stream pipeline visual */
+.pipeline-viz{
+  display:flex; align-items:center; justify-content:center; flex-wrap:wrap;
+  gap:0; margin:32px auto 0; max-width:700px;
+}
+.pipe-step{
+  display:flex; flex-direction:column; align-items:center;
+  background:var(--surface); border:1px solid var(--border2);
+  padding:10px 16px; border-radius:10px; font-family:'Fira Code',monospace;
+  font-size:11px; font-weight:500;
+}
+.pipe-step .ps-type{ font-size:9px; color:var(--text3); margin-bottom:3px; text-transform:uppercase; letter-spacing:1px; }
+.pipe-step.source .ps-name{ color:var(--emerald); }
+.pipe-step.inter .ps-name{ color:var(--cyan); }
+.pipe-step.terminal .ps-name{ color:var(--rose); }
+.pipe-arrow{ color:var(--text3); font-size:18px; padding:0 6px; align-self:center; }
+
+/* ── TOPIC CHIPS ── */
+.topic-bar{ display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-bottom:48px; }
+.tc{
+  font-family:'Fira Code',monospace; font-size:11px; font-weight:500;
+  padding:5px 14px; border-radius:6px; border:1px solid; cursor:default;
+}
+.tc-c{ color:var(--cyan);    border-color:rgba(34,211,238,0.3);  background:rgba(34,211,238,0.06); }
+.tc-v{ color:var(--violet);  border-color:rgba(129,140,248,0.3); background:rgba(129,140,248,0.06); }
+.tc-e{ color:var(--emerald); border-color:rgba(52,211,153,0.3);  background:rgba(52,211,153,0.06); }
+.tc-a{ color:var(--amber);   border-color:rgba(251,191,36,0.3);  background:rgba(251,191,36,0.06); }
+.tc-r{ color:var(--rose);    border-color:rgba(251,113,133,0.3); background:rgba(251,113,133,0.06); }
+
+/* ── INDEX ── */
+.index-box{
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:20px; padding:32px 36px; margin-bottom:56px;
+}
+.index-title{
+  font-family:'Fira Code',monospace; font-size:11px; font-weight:600;
+  color:var(--text3); letter-spacing:2px; text-transform:uppercase; margin-bottom:20px;
+  display:flex; align-items:center; gap:10px;
+}
+.index-title::after{ content:''; flex:1; height:1px; background:var(--border); }
+.index-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(290px,1fr)); gap:6px; }
+.index-item{
+  display:flex; align-items:center; gap:12px;
+  padding:10px 14px; border-radius:10px; text-decoration:none; color:var(--text2);
+  font-size:13px; transition:all .2s;
+}
+.index-item:hover{ background:rgba(34,211,238,0.06); color:var(--cyan); transform:translateX(3px); }
+.ix-n{
+  font-family:'Fira Code',monospace; font-size:10px; font-weight:700;
+  color:var(--bg); padding:3px 8px; border-radius:4px; flex-shrink:0; min-width:32px; text-align:center;
+}
+.ix-n.c{ background:var(--cyan); }
+.ix-n.v{ background:var(--violet); }
+.ix-n.e{ background:var(--emerald); }
+.ix-n.a{ background:var(--amber); }
+.ix-n.r{ background:var(--rose); }
+
+/* ── QUESTION CARD ── */
+.qcard{
+  background:var(--card); border:1px solid var(--border);
+  border-radius:24px; margin-bottom:40px; overflow:hidden;
+  transition:border-color .3s, box-shadow .3s;
+}
+.qcard:hover{
+  border-color:var(--border2);
+  box-shadow:0 0 40px rgba(34,211,238,0.05);
+}
+
+.qcard-header{
+  padding:28px 36px 22px;
+  display:flex; gap:18px; align-items:flex-start;
+  border-bottom:1px solid var(--border);
+  position:relative; overflow:hidden;
+}
+.qcard-header::before{
+  content:'';
+  position:absolute; top:0; left:0; right:0; height:2px;
+  background:linear-gradient(90deg, var(--accent-color,var(--cyan)) 0%, transparent 100%);
+}
+
+.qnum{
+  font-family:'Fira Code',monospace; font-size:11px; font-weight:700;
+  padding:5px 12px; border-radius:8px; flex-shrink:0; margin-top:2px; color:#0a0e1a;
+}
+.qnum.c{ background:var(--cyan); }
+.qnum.v{ background:var(--violet); }
+.qnum.e{ background:var(--emerald); }
+.qnum.a{ background:var(--amber); }
+.qnum.r{ background:var(--rose); }
+
+.qh-right{ flex:1; }
+.qtitle{ font-size:19px; font-weight:700; letter-spacing:-0.4px; margin-bottom:8px; }
+.qmeta{ display:flex; gap:8px; flex-wrap:wrap; }
+.qchip{
+  font-family:'Fira Code',monospace; font-size:10px; font-weight:600;
+  padding:3px 10px; border-radius:4px; border:1px solid;
+}
+.diff-e{ color:var(--emerald); border-color:rgba(52,211,153,.35); background:rgba(52,211,153,.06); }
+.diff-m{ color:var(--amber);   border-color:rgba(251,191,36,.35);  background:rgba(251,191,36,.06); }
+.diff-h{ color:var(--rose);    border-color:rgba(251,113,133,.35); background:rgba(251,113,133,.06); }
+.topic-chip{ color:var(--violet); border-color:rgba(129,140,248,.3); background:rgba(129,140,248,.06); }
+
+.qbody{ padding:30px 36px; }
+
+/* section labels */
+.slabel{
+  font-family:'Fira Code',monospace; font-size:10px; font-weight:600;
+  color:var(--text3); letter-spacing:2px; text-transform:uppercase;
+  margin-bottom:12px; margin-top:24px; display:flex; align-items:center; gap:8px;
+}
+.slabel:first-child{ margin-top:0; }
+.slabel::before{ content:'//'; color:var(--cyan); }
+
+.explain{ font-size:14px; color:var(--text2); line-height:1.8; }
+code.il{
+  font-family:'Fira Code',monospace; font-size:12px;
+  color:var(--cyan); background:rgba(34,211,238,0.08);
+  padding:2px 7px; border-radius:4px;
+}
+
+/* ── CODE BLOCK ── */
+.cb{
+  background:var(--code-bg); border:1px solid rgba(34,211,238,0.1);
+  border-radius:14px; overflow:hidden; margin:14px 0;
+  font-family:'Fira Code',monospace; font-size:12.5px; line-height:1.7;
+}
+.cb-head{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:10px 18px; background:rgba(255,255,255,0.025);
+  border-bottom:1px solid rgba(34,211,238,0.07);
+}
+.cb-lang{ font-size:10px; color:var(--cyan); font-weight:700; letter-spacing:1.5px; text-transform:uppercase; }
+.cb-dots{ display:flex; gap:6px; }
+.cb-dot{ width:10px; height:10px; border-radius:50%; }
+.cb-dot:nth-child(1){ background:#ff5f57; }
+.cb-dot:nth-child(2){ background:#febc2e; }
+.cb-dot:nth-child(3){ background:#28c840; }
+pre{ padding:20px 22px; overflow-x:auto; }
+
+/* syntax */
+.kw { color:#c084fc; font-weight:600; }   /* keywords */
+.ty { color:#7dd3fc; }                     /* types */
+.st { color:#86efac; }                     /* strings */
+.cm { color:#475569; font-style:italic; }  /* comments */
+.nm { color:#f9a8d4; }                     /* method names */
+.nu { color:#fca5a5; }                     /* numbers */
+.an { color:#fde68a; }                     /* annotations */
+.lm { color:#67e8f9; }                     /* lambda */
+.op { color:#c084fc; }                     /* operators */
+
+/* ── OUTPUT ── */
+.out{
+  background:rgba(52,211,153,0.05); border:1px solid rgba(52,211,153,.2);
+  border-radius:10px; padding:14px 18px; margin-top:12px;
+  font-family:'Fira Code',monospace; font-size:12px; color:var(--emerald);
+}
+.out-lbl{ color:var(--text3); font-size:9px; font-weight:700; letter-spacing:1.5px; margin-bottom:6px; text-transform:uppercase; }
+
+/* ── KEY POINTS ── */
+.kp{ margin-top:20px; }
+.kp ul{ list-style:none; display:flex; flex-direction:column; gap:9px; }
+.kp li{
+  display:flex; align-items:flex-start; gap:10px;
+  font-size:13px; color:var(--text2); line-height:1.7;
+}
+.kp li::before{ content:'▸'; color:var(--cyan); font-size:11px; flex-shrink:0; margin-top:3px; }
+.kp li strong{ color:var(--text); }
+
+/* ── COMPLEXITY ── */
+.cpx{
+  display:flex; gap:10px; flex-wrap:wrap; margin-top:20px;
+  padding-top:18px; border-top:1px solid var(--border);
+}
+.cpx-pill{
+  display:flex; align-items:center; gap:8px;
+  font-family:'Fira Code',monospace; font-size:11px;
+  padding:6px 14px; border-radius:8px;
+  background:rgba(255,255,255,0.03); border:1px solid var(--border);
+}
+.cpx-pill .cl{ color:var(--text3); font-size:10px; }
+.cpx-pill .cv{ color:var(--emerald); font-weight:600; }
+
+/* ── STREAM API CHEATSHEET ── */
+.cheatsheet{
+  background:var(--surface); border:1px solid var(--border2);
+  border-radius:20px; padding:36px; margin-bottom:48px;
+  position:relative; overflow:hidden;
+}
+.cheatsheet::before{
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background:linear-gradient(90deg, var(--cyan), var(--violet), var(--rose));
+}
+.cs-title{
+  font-family:'Fira Code',monospace; font-size:11px; font-weight:700;
+  color:var(--text3); letter-spacing:2px; text-transform:uppercase; margin-bottom:24px;
+}
+.cs-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px; }
+.cs-item{
+  background:var(--card); border:1px solid var(--border);
+  border-radius:12px; padding:14px 16px;
+}
+.cs-cat{ font-size:9px; color:var(--text3); text-transform:uppercase; letter-spacing:1.5px; margin-bottom:8px; font-family:'Fira Code',monospace; }
+.cs-methods{ display:flex; flex-direction:column; gap:4px; }
+.cs-method{
+  font-family:'Fira Code',monospace; font-size:11px;
+  padding:3px 8px; border-radius:4px;
+}
+.cs-method.src{ color:var(--emerald); background:rgba(52,211,153,.06); }
+.cs-method.int{ color:var(--cyan); background:rgba(34,211,238,.06); }
+.cs-method.ter{ color:var(--rose); background:rgba(251,113,133,.06); }
+.cs-method.col{ color:var(--violet); background:rgba(129,140,248,.06); }
+.cs-method.par{ color:var(--amber); background:rgba(251,191,36,.06); }
+
+/* ── TWO COLUMN LAYOUT ── */
+.two-col{ display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:14px 0; }
+
+footer{
+  text-align:center; margin-top:60px;
+  font-family:'Fira Code',monospace; font-size:12px; color:var(--text3);
+  border-top:1px solid var(--border); padding-top:24px;
+}
+
+@media(max-width:700px){
+  .qcard-header,.qbody{ padding:20px; }
+  .index-box{ padding:20px; }
+  .two-col{ grid-template-columns:1fr; }
+  .pipeline-viz{ flex-direction:column; }
+  .pipe-arrow{ transform:rotate(90deg); }
+  .cheatsheet{ padding:22px; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- ═══ HERO ═══ -->
+<header class="hero">
+  <div class="hero-badge">Java Stream API — Interview Mastery</div>
+  <h1>Top 10 Stream API<br>Coding Questions</h1>
+  <p class="hero-sub">Master every critical Stream operation — map, flatMap, collect, reduce, groupingBy, partitioningBy, and advanced Collectors — with interview-ready solutions.</p>
+
+  <!-- Pipeline visual -->
+  <div class="pipeline-viz">
+    <div class="pipe-step source"><span class="ps-type">source</span><span class="ps-name">Collection.stream()</span></div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-step inter"><span class="ps-type">intermediate</span><span class="ps-name">filter / map</span></div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-step inter"><span class="ps-type">intermediate</span><span class="ps-name">sorted / distinct</span></div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-step inter"><span class="ps-type">intermediate</span><span class="ps-name">flatMap / peek</span></div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-step terminal"><span class="ps-type">terminal</span><span class="ps-name">collect / reduce</span></div>
+  </div>
+</header>
+
+<!-- topic chips -->
+<div class="topic-bar">
+  <span class="tc tc-c">filter</span>
+  <span class="tc tc-c">map / mapToInt</span>
+  <span class="tc tc-v">flatMap</span>
+  <span class="tc tc-v">reduce</span>
+  <span class="tc tc-e">collect</span>
+  <span class="tc tc-e">groupingBy</span>
+  <span class="tc tc-a">partitioningBy</span>
+  <span class="tc tc-a">joining</span>
+  <span class="tc tc-r">sorted / distinct</span>
+  <span class="tc tc-r">Collectors.toMap</span>
+  <span class="tc tc-c">Optional</span>
+  <span class="tc tc-v">parallelStream</span>
+</div>
+
+<!-- ═══ CHEATSHEET ═══ -->
+<div class="cheatsheet">
+  <div class="cs-title">// Stream API Quick Reference</div>
+  <div class="cs-grid">
+    <div class="cs-item">
+      <div class="cs-cat">Sources</div>
+      <div class="cs-methods">
+        <span class="cs-method src">collection.stream()</span>
+        <span class="cs-method src">Arrays.stream(arr)</span>
+        <span class="cs-method src">Stream.of(a, b, c)</span>
+        <span class="cs-method src">Stream.iterate(seed, f)</span>
+        <span class="cs-method src">Stream.generate(supplier)</span>
+        <span class="cs-method src">IntStream.range(0, n)</span>
+      </div>
+    </div>
+    <div class="cs-item">
+      <div class="cs-cat">Intermediate (Lazy)</div>
+      <div class="cs-methods">
+        <span class="cs-method int">filter(Predicate)</span>
+        <span class="cs-method int">map(Function)</span>
+        <span class="cs-method int">flatMap(Function)</span>
+        <span class="cs-method int">distinct()</span>
+        <span class="cs-method int">sorted() / sorted(Comparator)</span>
+        <span class="cs-method int">limit(n) / skip(n)</span>
+        <span class="cs-method int">peek(Consumer)</span>
+      </div>
+    </div>
+    <div class="cs-item">
+      <div class="cs-cat">Terminal (Eager)</div>
+      <div class="cs-methods">
+        <span class="cs-method ter">collect(Collector)</span>
+        <span class="cs-method ter">reduce(identity, BinaryOp)</span>
+        <span class="cs-method ter">forEach(Consumer)</span>
+        <span class="cs-method ter">count() / min() / max()</span>
+        <span class="cs-method ter">findFirst() / findAny()</span>
+        <span class="cs-method ter">anyMatch / allMatch / noneMatch</span>
+        <span class="cs-method ter">toArray()</span>
+      </div>
+    </div>
+    <div class="cs-item">
+      <div class="cs-cat">Key Collectors</div>
+      <div class="cs-methods">
+        <span class="cs-method col">toList() / toSet()</span>
+        <span class="cs-method col">toMap(k, v)</span>
+        <span class="cs-method col">groupingBy(classifier)</span>
+        <span class="cs-method col">partitioningBy(predicate)</span>
+        <span class="cs-method col">counting()</span>
+        <span class="cs-method col">joining(delim, pre, suf)</span>
+        <span class="cs-method col">summarizingInt()</span>
+      </div>
+    </div>
+    <div class="cs-item">
+      <div class="cs-cat">Numeric Streams</div>
+      <div class="cs-methods">
+        <span class="cs-method par">IntStream / LongStream</span>
+        <span class="cs-method par">mapToInt / mapToObj</span>
+        <span class="cs-method par">sum() / average()</span>
+        <span class="cs-method par">boxed() → Stream&lt;T&gt;</span>
+        <span class="cs-method par">IntStream.range(a,b)</span>
+        <span class="cs-method par">summaryStatistics()</span>
+      </div>
+    </div>
+    <div class="cs-item">
+      <div class="cs-cat">Parallel & Special</div>
+      <div class="cs-methods">
+        <span class="cs-method par">parallelStream()</span>
+        <span class="cs-method par">sequential()</span>
+        <span class="cs-method par">Optional.map/orElse</span>
+        <span class="cs-method par">Collectors.teeing()</span>
+        <span class="cs-method par">flatMapToInt()</span>
+        <span class="cs-method par">Stream.concat(s1, s2)</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ INDEX ═══ -->
+<div class="index-box">
+  <div class="index-title">Contents</div>
+  <div class="index-grid">
+    <a href="#q1" class="index-item"><span class="ix-n c">01</span>Filter + Map + Collect</a>
+    <a href="#q2" class="index-item"><span class="ix-n v">02</span>FlatMap — Nested Collections</a>
+    <a href="#q3" class="index-item"><span class="ix-n e">03</span>Reduce — Sum / Product</a>
+    <a href="#q4" class="index-item"><span class="ix-n a">04</span>GroupingBy + Counting</a>
+    <a href="#q5" class="index-item"><span class="ix-n r">05</span>PartitioningBy</a>
+    <a href="#q6" class="index-item"><span class="ix-n c">06</span>Collectors.joining</a>
+    <a href="#q7" class="index-item"><span class="ix-n v">07</span>Sorted + Distinct + Limit</a>
+    <a href="#q8" class="index-item"><span class="ix-n e">08</span>Collectors.toMap — Custom Map</a>
+    <a href="#q9" class="index-item"><span class="ix-n a">09</span>mapToInt / Statistics / Average</a>
+    <a href="#q10" class="index-item"><span class="ix-n r">10</span>Parallel Stream + Optional</a>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ -->
+<!-- Q1 -->
+<!-- ═══════════════════════════════════ -->
+<div class="qcard" id="q1" style="--accent-color:var(--cyan)">
+  <div class="qcard-header">
+    <span class="qnum c">Q 01</span>
+    <div class="qh-right">
+      <div class="qtitle">Filter → Map → Collect  |  The Core Pipeline</div>
+      <div class="qmeta">
+        <span class="qchip diff-e">Easy</span>
+        <span class="qchip topic-chip">filter</span>
+        <span class="qchip topic-chip">map</span>
+        <span class="qchip topic-chip">collect</span>
+        <span class="qchip topic-chip">toList</span>
+      </div>
+    </div>
+  </div>
+  <div class="qbody">
+    <div class="slabel">problem</div>
+    <p class="explain">Given a list of employees, get the names of all employees whose salary &gt; 50,000, convert to uppercase, and collect into a list. This is the <strong>bread-and-butter</strong> Stream pipeline every interviewer expects you to recite fluently.</p>
+
+    <div class="slabel">solution</div>
+    <div class="cb">
+      <div class="cb-head"><div class="cb-dots"><div class="cb-dot"></div><div class="cb-dot"></div><div class="cb-dot"></div></div><span class="cb-lang">Java</span></div>
+      <pre><code><span class="kw">import</span> java.util.*;
+<span class="kw">import</span> java.util.stream.*;
+
+<span class="kw">record</span> <span class="ty">Employee</span>(<span class="ty">String</span> name, <span class="ty">double</span> salary, <span class="ty">String</span> dept) {}
+
+<span class="kw">public class</span> <span class="ty">Q1FilterMapCollect</span> {
+
+    <span class="kw">public static void</span> <span class="nm">main</span>(<span class="ty">String</span>[] args) {
+
+        <span class="ty">List</span>&lt;<span class="ty">Employee</span>&gt; employees = <span class="ty">List</span>.<span class="nm">of</span>(
+            <span class="kw">new</span> <span class="ty">Employee</span>(<span class="st">"Alice"</span>,  <span class="nu">72000</span>, <span class="st">"Engineering"</span>),
+            <span class="kw">new</span> <span class="ty">Employee</span>(<span class="st">"Bob"</span>,    <span class="nu">45000</span>, <span class="st">"HR"</span>),
+            <span class="kw">new</span> <span class="ty">Employee</span>(<span class="st">"Charlie"</span>,<span class="nu">91000</span>, <span class="st">"Engineering"</span>),
+            <span class="kw">new</span> <span class="ty">Employee</span>(<span class="st">"Diana"</span>,  <span class="nu">48000</span>, <span class="st">"Finance"</span>),
+            <span class="kw">new</span> <span class="ty">Employee</span>(<span class="st">"Eve"</span>,    <span class="nu">63000</span>, <span class="st">"Engineering"</span>)
+        );
+
+        <span class="cm">// ── Core pipeline: filter → map → collect ──</span>
+        <span class="ty">List</span>&lt;<span class="ty">String</span>&gt; highEarners =
+            employees.<span class="nm">stream</span>()                        <span class="cm">// 1. create Stream&lt;Employee&gt;</span>
+                     .<span class="nm">filter</span>(e <span class="lm">-></span> e.salary() &gt; <span class="nu">50_000</span>) <span class="cm">// 2. keep salary > 50k</span>
+                     .<span class="nm">map</span>(<span class="ty">Employee</span>::name)              <span class="cm">// 3. extract name (method ref)</span>
+                     .<span class="nm">map</span>(<span class="ty">String</span>::toUpperCase)          <span class="cm">// 4. uppercase</span>
+                     .<span class="nm">sorted</span>()                          <span class="cm">// 5. alphabetical order</span>
+                     .<span class="nm">collect</span>(<span class="ty">Collectors</span>.<span class="nm">toList</span>());  <span class="cm">// 6. terminal — collect</span>
+
+        <span class="ty">System</span>.out.<span class="nm">println</span>(highEarners);
+        <span class="cm">// [ALICE, CHARLIE, EVE]</span>
+
+        <span class="cm">// ── Java 16+ shorthand ──</span>
+        <span class="ty">List</span>&lt;<span class="ty">String</span>&gt; modern =
+            employees.<span class="nm">stream</span>()
+                     .<span class="nm">filter</span>(e <span class="lm">-></span> e.salary() &gt; <span class="nu">50_000</span>)
+                     .<span class="nm">map</span>(<span class="ty">Employee</span>::name)
+                     .<span class="nm">toList</span>();  <span class="cm">// Java 16+ — returns unmodifiable list</span>
+
+        <span class="cm">// ── count only ──</span>
+        <span class="kw">long</span> count = employees.<span class="nm">stream</span>()
+                               .<span class="nm">filter</span>(e <span class="lm">-></span> e.salary() &gt; <span class="nu">50_000</span>)
+                               .<span class="nm">count</span>();
+        <span class="ty">System</span>.out.<span class="nm">println</span>(<span class="st">"Count: "</span> + count); <span class="cm">// 3</span>
+    }
+}</code></pre>
+    </div>
+
+    <div class="out"><div class="out-lbl">Output</div>[ALICE, CHARLIE, EVE]<br>Count: 3</div>
+
+    <div class="kp">
+      <div class="slabel">key insight</div>
+      <ul>
+        <li><strong>Intermediate ops are lazy</strong> — nothing executes until a terminal op (<code class="il">collect</code>, <code class="il">count</code>) is called. Chain as many as you need.</li>
+        <li><strong>Method references</strong> (<code class="il">Employee::name</code>) are shorthand for lambdas <code class="il">e -> e.name()</code> — always prefer them for clarity.</li>
+        <li><code class="il">.toList()</code> (Java 16+) returns an <em>unmodifiable</em> list. Use <code class="il">Collectors.toList()</code> when mutability is needed.</li>
+        <li>Multiple <code class="il">filter()</code> or <code class="il">map()</code> calls are perfectly fine — the JVM optimises the pipeline internally.</li>
+      </ul>
+    </div>
+    <div class="cpx">
+      <div class="cpx-pill"><span class="cl">Time</span> <span class="cv">O(n)</span></div>
+      <div class="cpx-pill"><span class="cl">Space</span> <span class="cv">O(k)</span></div>
+      <div class="cpx-pill"><span class="cl">k</span> <span class="cv">= filtered elements</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Q2 ═══ -->
+<div class="qcard" id="q2" style="--accent-color:var(--violet)">
+  <div class="qcard-header">
+    <span class="qnum v">Q 02</span>
+    <div class="qh-right">
+      <div class="qtitle">flatMap — Flatten Nested Collections</div>
+      <div class="qmeta">
+        <span class="qchip diff-m">Medium</span>
+        <span class="qchip topic-chip">flatMap</span>
+        <span class="qchip topic-chip">nested collections</span>
+        <span class="qchip topic-chip">distinct</span>
+      </div>
+    </div>
+  </div>
+  <div class="qbody">
+    <div class="slabel">problem</div>
+    <p class="explain"><code class="il">flatMap</code> vs <code class="il">map</code> is the #1 most asked Stream concept distinction. Given a list of departments where each has a list of skills, produce a flat, unique, sorted list of all skills across all departments.</p>
+
+    <div class="slabel">solution</div>
+    <div class="cb">
+      <div class="cb-head"><div class="cb-dots"><div class="cb-dot"></div><div class="cb-dot"></div><div class="cb-dot"></div></div><span class="cb-lang">Java</span></div>
+      <pre><code><span class="kw">import</span> java.util.*;
+<span class="kw">import</span> java.util.stream.*;
+
+<span class="kw">public class</span> <span class="ty">Q2FlatMap</span> {
+
+    <span class="kw">public static void</span> <span class="nm">main</span>(<span class="ty">String</span>[] args) {
+
+        <span class="ty">List</span>&lt;<span class="ty">List</span>&lt;<span class="ty">String</span>&gt;&gt; departments = <span class="ty">List</span>.<span class="nm">of</span>(
+            <span class="ty">List</span>.<span class="nm">of</span>(<span class="st">"Java"</span>, <span class="st">"Spring"</span>, <span class="st">"SQL"</span>),
+            <span class="ty">List</span>.<span class="nm">of</span>(<span class="st">"Python"</span>, <span class="st">"Java"</span>, <span class="st">"ML"</span>),
+            <span class="ty">List</span>.<span class="nm">of</span>(<span class="st">"React"</span>, <span class="st">"SQL"</span>, <span class="st">"Node"</span>)
+        );
+
+        <span class="cm">// map() gives Stream&lt;Stream&lt;String&gt;&gt; — WRONG ❌</span>
+        <span class="cm">// Stream&lt;Stream&lt;String&gt;&gt; wrong = departments.stream().map(Collection::stream);</span>
+
+        <span class="cm">// flatMap() flattens → Stream&lt;String&gt; — CORRECT ✓</span>
+        <span class="ty">List</span>&lt;<span class="ty">String</span>&gt; allSkills =
+            departments.<span class="nm">stream</span>()
+                .<span class="nm">flatMap</span>(<span class="ty">Collection</span>::stream)  <span class="cm">// each List → Stream, then merge</span>
+                .<span class="nm">distinct</span>()                     <span class="cm">// remove duplicates</span>
+                .<span class="nm">sorted</span>()                       <span class="cm">// alphabetical</span>
+                .<span class="nm">collect</span>(<span class="ty">Collectors</span>.<span class="nm">toList</span>());
+
+        <span class="ty">System</span>.out.<span class="nm">println</span>(allSkills);
+        <span class="cm">// [Java, ML, Node, Python, React, SQL, Spring]</span>
+
+        <span class="cm">// ── Real-world: flatten words from sentences ──</span>
+        <span class="ty">List</span>&lt;<span class="ty">String</span>&gt; sentences = <span class="ty">List</span>.<span class="nm">of</span>(<span class="st">"hello world"</span>, <span class="st">"stream api rocks"</span>);
+
+        <span class="ty">List</span>&lt;<span class="ty">String</span>&gt; words =
+            sentences.<span class="nm">stream</span>()
+                .<span class="nm">flatMap</span>(s <span class="lm">-></span> <span class="ty">Arrays</span>.<span class="nm">stream</span>(s.<span class="nm">split</span>(<span class="st">" "</span>))) <span class="cm">// split each sentence</span>
+                .<span class="nm">collect</span>(<span class="ty">Collectors</span>.<span class="nm">toList</span>());
+
+        <span class="ty">System</span>.out.<span class="nm">println</span>(words);
+        <span class="cm">// [hello, world, stream, api, rocks]</span>
+
+        <span class="cm">// ── Optional.flatMap — avoid nested Optional ──</span>
+        <span class="ty">Optional</span>&lt;<span class="ty">String</span>&gt; opt = <span class="ty">Optional</span>.<span class="nm">of</span>(<span class="st">"  Java  "</span>)
+            .<span class="nm">map</span>(<span class="ty">String</span>::trim)
+            .<span class="nm">filter</span>(s <span class="lm">-></span> !s.<span class="nm">isEmpty</span>());
+
+        opt.<span class="nm">ifPresent</span>(<span class="ty">System</span>.out::println); <span class="cm">// Java</span>
+    }
+}</code></pre>
+    </div>
+
+    <div class="out"><div class="out-lbl">Output</div>[Java, ML, Node, Python, React, SQL, Spring]<br>[hello, world, stream, api, rocks]</div>
+
+    <div class="kp">
+      <div class="slabel">key insight</div>
+      <ul>
+        <li><strong>map → Stream&lt;Stream&lt;T&gt;&gt;</strong> (nested). <strong>flatMap → Stream&lt;T&gt;</strong> (flat). This distinction is asked in nearly every interview.</li>
+        <li><code class="il">flatMap(Collection::stream)</code> is the canonical idiom for flattening a <code class="il">List&lt;List&lt;T&gt;&gt;</code>.</li>
+        <li>For strings: <code class="il">flatMap(s -> Arrays.stream(s.split(...)))</code> — splits and flattens in one step.</li>
+        <li><code class="il">Optional.flatMap()</code> avoids <code class="il">Optional&lt;Optional&lt;T&gt;&gt;</code> — same concept applied to Optional.</li>
+      </ul>
+    </div>
+    <div class="cpx">
+      <div class="cpx-pill"><span class="cl">Time</span> <span class="cv">O(n·m)</span></div>
+      <div class="cpx-pill"><span class="cl">n</span> <span class="cv">= outer lists</span></div>
+      <div class="cpx-pill"><span class="cl">m</span> <span class="cv">= avg inner size</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Q3 ═══ -->
+<div class="qcard" id="q3" style="--accent-color:var(--emerald)">
+  <div class="qcard-header">
+    <span class="qnum e">Q 03</span>
+    <div class="qh-right">
+      <div class="qtitle">reduce() — Custom Aggregation</div>
+      <div class="qmeta">
+        <span class="qchip diff-m">Medium</span>
+        <span class="qchip topic-chip">reduce</span>
+        <span class="qchip topic-chip">BinaryOperator</span>
+        <span class="qchip topic-chip">identity</span>
+      </div>
+    </div>
+  </div>
+  <div class="qbody">
+    <div class="slabel">problem</div>
+    <p class="explain">Use <code class="il">reduce()</code> to compute sum, product, max, and string concatenation from a stream. <code class="il">reduce</code> is the most general terminal operation — it can implement any aggregation including custom accumulators.</p>
+
+    <div class="slabel">solution</div>
+    <div class="cb">
+      <div class="cb-head"><div class="cb-dots"><div class="cb-dot"></div><div class="cb-dot"></div><div class="cb-dot"></div></div><span class="cb-lang">Java</span></div>
+      <pre><code><span class="kw">import</span> java.util.*;
+<span class="kw">import</span> java.util.stream.*;
+
+<span class="kw">public class</span> <span class="ty">Q3Reduce</span> {
+
+    <span class="kw">public static void</span> <span class="nm">main</span>(<span class="ty">String</span>[] args) {
+
+        <span class="ty">List</span>&lt;<span class="ty">Integer</span>&gt; nums = <span class="ty">List</span>.<span class="nm">of</span>(<span class="nu">1</span>, <span class="nu">2</span>, <span class="nu">3</span>, <span class="nu">4</span>, <span class="nu">5</span>);
+
+        <span class="cm">// ── 1. reduce(identity, accumulator) ──</span>
+        <span class="ty">int</span> sum = nums.<span class="nm">stream</span>()
+                      .<span class="nm">reduce</span>(<span class="nu">0</span>, <span class="ty">Integer</span>::sum); <span class="cm">// 0 + 1+2+3+4+5 = 15</span>
+        <span class="ty">System</span>.out.<span class="nm">println</span>(<span class="st">"Sum: "</span> + sum);
+
+        <span class="ty">int</span> product = nums.<span class="nm">stream</span>()
+                         .<span class="nm">reduce</span>(<span class="nu">1</span>, (a, b) <span class="lm">-></span> a * b); <span class="cm">// 120</span>
+        <span class="ty">System</span>.out.<span class="nm">println</span>(<span class="st">"Product: "</span> + product);
+
+        <span class="cm">// ── 2. reduce() returning Optional (no identity) ──</span>
+        <span class="ty">Optional</span>&lt;<span class="ty">Integer</span>&gt; max =
+            nums.<span class="nm">stream</span>()
+                .<span class="nm">reduce</span>(<span class="ty">Integer</span>::max);     <span class="cm">// returns Optional (stream may be empty)</span>
+        max.<span class="nm">ifPresent</span>(m <span class="lm">-></span> <span class="ty">System</span>.out.<span class="nm">println</span>(<span class="st">"Max: "</span> + m));
+
+        <span class="cm">// ── 3. String concatenation with reduce ──</span>
+        <span class="ty">List</span>&lt;<span class="ty">String</span>&gt; words = <span class="ty">List</span>.<span class="nm">of</span>(<span class="st">"Stream"</span>, <span class="st">"API"</span>, <span class="st">"rocks"</span>);
+        <span class="ty">String</span> sentence = words.<span class="nm">stream</span>()
+                                .<span class="nm">reduce</span>(<span class="st">""</span>, (a, b) <span class="lm">-></span> a.<span class="nm">isEmpty</span>() ? b : a + <span class="st">" "</span> + b);
+        <span class="ty">System</span>.out.<span class="nm">println</span>(sentence); <span class="cm">// Stream API rocks</span>
+
+        <span class="cm">// ── 4. Custom object reduction — sum salaries ──</span>
+        <span class="ty">List</span>&lt;<span class="ty">Employee</span>&gt; emps = <span class="ty">List</span>.<span class="nm">of</span>(
+            <span class="kw">new</span> <span class="ty">Employee</span>(<span class="st">"A"</span>, <span class="nu">50000</span>), <span class="kw">new</span> <span class="ty">Employee</span>(<span class="st">"B"</span>, <span class="nu">70000</span>)
+        );
+
+        <span class="ty">double</span> totalSalary = emps.<span class="nm">stream</span>()
+            .<span class="nm">map</span>(<span class="ty">Employee</span>::salary)
+            .<span class="nm">reduce</span>(<span class="nu">0.0</span>, <span class="ty">Double</span>::sum);
+        <span class="ty">System</span>.out.<span class="nm">println</span>(<span class="st">"Total salary: "</span> + totalSalary); <span class="cm">// 120000.0</span>
+
+        <span class="cm">// ── 5. Three-arg reduce for parallel streams ──</span>
+        <span class="ty">int</span> parallelSum = nums.<span class="nm">parallelStream</span>()
+            .<span class="nm">reduce</span>(<span class="nu">0</span>,              <span class="cm">// identity</span>
+                    <span class="ty">Integer</span>::sum,   <span class="cm">// accumulator</span>
+                    <span class="ty">Integer</span>::sum);  <span class="cm">// combiner (merges partial results)</span>
+        <span class="ty">System</span>.out.<span class="nm">println</span>(<span class="st">"Parallel sum: "</span> + parallelSum); <span class="cm">// 15</span>
+    }
+
+    <span class="kw">record</span> <span class="ty">Employee</span>(<span class="ty">String</span> name, <span class="ty">double</span> salary) {}
+}</code></pre>
+    </div>
+
+    <div class="out"><div class="out-lbl">Output</div>Sum: 15 | Product: 120 | Max: 5<br>Stream API rocks | Total salary: 120000.0</div>
+
+    <div class="kp">
+      <div class="slabel">key insight</div>
+      <ul>
+        <li><strong>2-arg reduce</strong> <code class="il">reduce(identity, accumulator)</code> — always returns T. Use when stream <em>might be empty</em> (identity is the fallback).</li>
+        <li><strong>1-arg reduce</strong> <code class="il">reduce(accumulator)</code> — returns <code class="il">Optional&lt;T&gt;</code> because empty stream has no result.</li>
+        <li><strong>3-arg reduce</strong> adds a <em>combiner</em> — mandatory for <code class="il">parallelStream</code> to merge partial results from different threads.</li>
+        <li>Prefer <code class="il">mapToInt().sum()</code> over <code class="il">reduce</code> for numeric aggregation — avoids boxing overhead.</li>
+      </ul>
+    </div>
+    <div class="cpx">
+      <div class="cpx-pill"><span class="cl">Time</span> <span class="cv">O(n)</span></div>
+      <div class="cpx-pill"><span class="cl">Parallel</span> <span class="cv">O(n/p)</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Q4 ═══ -->
+<div class="qcard" id="q4" style="--accent-color:var(--amber)">
+  <div class="qcard-header">
+    <span class="qnum a">Q 04</span>
+    <div class="qh-right">
+      <div class="qtitle">groupingBy — Multi-level Grouping & Counting</div>
+      <div class="qmeta">
+        <span class="qchip diff-m">Medium</span>
+        <span class="qchip topic-chip">groupingBy</span>
+        <span class="qchip topic-chip">counting</span>
+        <span class="qchip topic-chip">downstream collectors</span>
+      </div>
+    </div>
+  </div>
+  <div class="qbody">
+    <div class="slabel">problem</div>
+    <p class="explain">Group employees by department. Then count per department. Then find max salary per department. This tests <code class="il">Collectors.groupingBy()</code> with <strong>downstream collectors</strong> — one of the most important advanced Stream patterns.</p>
+
+    <div class="slabel">solution</div>
+    <div class="cb">
+      <div class="cb-head"><div class="cb-dots"><div class="cb-dot"></div><div class="cb-dot"></div><div class="cb-dot"></div></div><span class="cb-lang">Java</span></div>
+      <pre><code><span class="kw">import</span> java.util.*;
+<span class="kw">import</span> java.util.stream.*;
+
+<span class="kw">record</span> <span class="ty">Employee</span>(<span class="ty">String</span> name, <span class="ty">String</span> dept, <span class="ty">double</span> salary) {}
+
+<span class="kw">public class</span> <span class="ty">Q4GroupingBy</span> {
+
+    <span class="kw">public static void</span> <span class="nm">main</span>(<span class="ty">String</span>[] args) {
+
+        <span class="ty">List</span>&lt;<span class="ty">Employee</span>&gt; emps = <span class="ty">List</span>.<span class="nm">of</span>(
+            <span class="kw">new</span> <span class="ty">Employee</span>(<span class="st">"Alice"</span>,   <span class="st">"Eng"</span>,     <span class="nu">90000</span>),
+            <span class="kw">new</span> <span class="ty">Employee</span>(<span class="st">"Bob"</span>,     <span class="st">"HR"</span>,      <span class="nu">50000</span>),
+            <span class="kw">new</span> <span class="ty">Employee</span>(<span class="st">"Charlie"</span>, <span class="st">"Eng"</span>,     <span class="nu">75000</span>),
+            <span class="kw">new</span> <span class="ty">Employee</span>(<span class="st">"Diana"</span>,   <span class="st">"Finance"</span>, <span class="nu">82000</span>),
+            <span class="kw">new</span> <span class="ty">Employee</span>(<span class="st">"Eve"</span>,     <span class="st">"HR"</span>,      <span class="nu">55000</span>)
+        );
+
+        <span class="cm">// ── 1. Basic grouping → Map&lt;String, List&lt;Employee&gt;&gt; ──</span>
+        <span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="ty">List</span>&lt;<span class="ty">Employee</span>&gt;&gt; byDept =
+            emps.<span class="nm">stream</span>()
+                .<span class="nm">collect</span>(<span class="ty">Collectors</span>.<span class="nm">groupingBy</span>(<span class="ty">Employee</span>::dept));
+
+        byDept.<span class="nm">forEach</span>((dept, list) <span class="lm">-></span>
+            <span class="ty">System</span>.out.<span class="nm">println</span>(dept + <span class="st">" → "</span> + list.<span class="nm">stream</span>().<span class="nm">map</span>(<span class="ty">Employee</span>::name).<span class="nm">toList</span>()));
+
+        <span class="cm">// ── 2. groupingBy + counting downstream ──</span>
+        <span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="ty">Long</span>&gt; countByDept =
+            emps.<span class="nm">stream</span>()
+                .<span class="nm">collect</span>(<span class="ty">Collectors</span>.<span class="nm">groupingBy</span>(
+                    <span class="ty">Employee</span>::dept,
+                    <span class="ty">Collectors</span>.<span class="nm">counting</span>()        <span class="cm">// downstream collector</span>
+                ));
+        <span class="ty">System</span>.out.<span class="nm">println</span>(countByDept);
+        <span class="cm">// {Eng=2, HR=2, Finance=1}</span>
+
+        <span class="cm">// ── 3. groupingBy + max salary per dept ──</span>
+        <span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="ty">Optional</span>&lt;<span class="ty">Employee</span>&gt;&gt; maxSalaryByDept =
+            emps.<span class="nm">stream</span>()
+                .<span class="nm">collect</span>(<span class="ty">Collectors</span>.<span class="nm">groupingBy</span>(
+                    <span class="ty">Employee</span>::dept,
+                    <span class="ty">Collectors</span>.<span class="nm">maxBy</span>(<span class="ty">Comparator</span>.<span class="nm">comparingDouble</span>(<span class="ty">Employee</span>::salary))
+                ));
+        maxSalaryByDept.<span class="nm">forEach</span>((dept, emp) <span class="lm">-></span>
+            <span class="ty">System</span>.out.<span class="nm">println</span>(dept + <span class="st">" top: "</span> + emp.<span class="nm">map</span>(<span class="ty">Employee</span>::name).<span class="nm">orElse</span>(<span class="st">"none"</span>)));
+
+        <span class="cm">// ── 4. groupingBy + average salary ──</span>
+        <span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="ty">Double</span>&gt; avgSalary =
+            emps.<span class="nm">stream</span>()
+                .<span class="nm">collect</span>(<span class="ty">Collectors</span>.<span class="nm">groupingBy</span>(
+                    <span class="ty">Employee</span>::dept,
+                    <span class="ty">Collectors</span>.<span class="nm">averagingDouble</span>(<span class="ty">Employee</span>::salary)
+                ));
+        <span class="ty">System</span>.out.<span class="nm">println</span>(avgSalary);
+
+        <span class="cm">// ── 5. Multilevel groupingBy (dept → gender → list) ──</span>
+        <span class="cm">// Collectors.groupingBy( outer, Collectors.groupingBy( inner ) )</span>
+        <span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="ty">Long</span>&gt;&gt; nested =
+            emps.<span class="nm">stream</span>()
+                .<span class="nm">collect</span>(<span class="ty">Collectors</span>.<span class="nm">groupingBy</span>(
+                    <span class="ty">Employee</span>::dept,
+                    <span class="ty">Collectors</span>.<span class="nm">groupingBy</span>(          <span class="cm">// inner grouping</span>
+                        e <span class="lm">-></span> e.salary() &gt; <span class="nu">70000</span> ? <span class="st">"senior"</span> : <span class="st">"junior"</span>,
+                        <span class="ty">Collectors</span>.<span class="nm">counting</span>()
+                    )
+                ));
+        <span class="ty">System</span>.out.<span class="nm">println</span>(nested);
+    }
+}</code></pre>
+    </div>
+
+    <div class="out"><div class="out-lbl">Output</div>Eng → [Alice, Charlie] | HR → [Bob, Eve] | Finance → [Diana]<br>{Eng=2, HR=2, Finance=1}<br>Eng top: Alice | HR top: Eve | Finance top: Diana</div>
+
+    <div class="kp">
+      <div class="slabel">key insight</div>
+      <ul>
+        <li><strong>groupingBy(classifier)</strong> → <code class="il">Map&lt;K, List&lt;T&gt;&gt;</code>. The list is the default downstream collector.</li>
+        <li><strong>Downstream collectors</strong> transform the grouped list: <code class="il">counting()</code>, <code class="il">maxBy()</code>, <code class="il">averagingDouble()</code>, <code class="il">joining()</code>, <code class="il">mapping()</code>.</li>
+        <li><strong>Nested groupingBy</strong> creates <code class="il">Map&lt;K1, Map&lt;K2, List&lt;T&gt;&gt;&gt;</code> — very powerful for pivot-table style aggregation.</li>
+        <li>For counting patterns, <code class="il">groupingBy(f, counting())</code> is equivalent to SQL <code class="il">GROUP BY ... COUNT(*)</code>.</li>
+      </ul>
+    </div>
+    <div class="cpx">
+      <div class="cpx-pill"><span class="cl">Time</span> <span class="cv">O(n)</span></div>
+      <div class="cpx-pill"><span class="cl">Space</span> <span class="cv">O(n)</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Q5 ═══ -->
+<div class="qcard" id="q5" style="--accent-color:var(--rose)">
+  <div class="qcard-header">
+    <span class="qnum r">Q 05</span>
+    <div class="qh-right">
+      <div class="qtitle">partitioningBy — Split into Two Groups</div>
+      <div class="qmeta">
+        <span class="qchip diff-e">Easy</span>
+        <span class="qchip topic-chip">partitioningBy</span>
+        <span class="qchip topic-chip">predicate</span>
+        <span class="qchip topic-chip">Map&lt;Boolean,List&gt;</span>
+      </div>
+    </div>
+  </div>
+  <div class="qbody">
+    <div class="slabel">problem</div>
+    <p class="explain">Split a list of numbers into even and odd. Split employees into those earning above average and below. <code class="il">partitioningBy</code> is a special case of <code class="il">groupingBy</code> that always produces a <code class="il">Map&lt;Boolean, List&lt;T&gt;&gt;</code> — both keys (true/false) always exist.</p>
+
+    <div class="slabel">solution</div>
+    <div class="cb">
+      <div class="cb-head"><div class="cb-dots"><div class="cb-dot"></div><div class="cb-dot"></div><div class="cb-dot"></div></div><span class="cb-lang">Java</span></div>
+      <pre><code><span class="kw">import</span> java.util.*;
+<span class="kw">import</span> java.util.stream.*;
+
+<span class="kw">public class</span> <span class="ty">Q5Partitioning</span> {
+
+    <span class="kw">public static void</span> <span class="nm">main</span>(<span class="ty">String</span>[] args) {
+
+        <span class="ty">List</span>&lt;<span class="ty">Integer</span>&gt; numbers = <span class="ty">List</span>.<span class="nm">of</span>(<span class="nu">1</span>,<span class="nu">2</span>,<span class="nu">3</span>,<span class="nu">4</span>,<span class="nu">5</span>,<span class="nu">6</span>,<span class="nu">7</span>,<span class="nu">8</span>,<span class="nu">9</span>,<span class="nu">10</span>);
+
+        <span class="cm">// ── 1. Basic partitioningBy ──</span>
+        <span class="ty">Map</span>&lt;<span class="ty">Boolean</span>, <span class="ty">List</span>&lt;<span class="ty">Integer</span>&gt;&gt; evenOdd =
+            numbers.<span class="nm">stream</span>()
+                   .<span class="nm">collect</span>(<span class="ty">Collectors</span>.<span class="nm">partitioningBy</span>(n <span class="lm">-></span> n % <span class="nu">2</span> == <span class="nu">0</span>));
+
+        <span class="ty">System</span>.out.<span class="nm">println</span>(<span class="st">"Even: "</span> + evenOdd.<span class="nm">get</span>(<span class="kw">true</span>));   <span class="cm">// [2,4,6,8,10]</span>
+        <span class="ty">System</span>.out.<span class="nm">println</span>(<span class="st">"Odd:  "</span> + evenOdd.<span class="nm">get</span>(<span class="kw">false</span>));  <span class="cm">// [1,3,5,7,9]</span>
+
+        <span class="cm">// ── 2. partitioningBy + downstream counting ──</span>
+        <span class="ty">Map</span>&lt;<span class="ty">Boolean</span>, <span class="ty">Long</span>&gt; counts =
+            numbers.<span class="nm">stream</span>()
+                   .<span class="nm">collect</span>(<span class="ty">Collectors</span>.<span class="nm">partitioningBy</span>(
+                       n <span class="lm">-></span> n % <span class="nu">2</span> == <span class="nu">0</span>,
+                       <span class="ty">Collectors</span>.<span class="nm">counting</span>()
+                   ));
+        <span class="ty">System</span>.out.<span class="nm">println</span>(counts); <span class="cm">// {false=5, true=5}</span>
+
+        <span class="cm">// ── 3. Real-world: split employees above/below avg salary ──</span>
+        <span class="ty">List</span>&lt;<span class="ty">Employee</span>&gt; emps = <span class="ty">List</span>.<span class="nm">of</span>(
+            <span class="kw">new</span> <span class="ty">Employee</span>(<span class="st">"Alice"</span>, <span class="nu">90000</span>), <span class="kw">new</span> <span class="ty">Employee</span>(<span class="st">"Bob"</span>, <span class="nu">45000</span>),
+            <span class="kw">new</span> <span class="ty">Employee</span>(<span class="st">"Eve"</span>,   <span class="nu">72000</span>), <span class="kw">new</span> <span class="ty">Employee</span>(<span class="st">"Dan"</span>, <span class="nu">55000</span>)
+        );
+
+        <span class="ty">double</span> avg = emps.<span class="nm">stream</span>()
+            .<span class="nm">mapToDouble</span>(<span class="ty">Employee</span>::salary)
+            .<span class="nm">average</span>().<span class="nm">orElse</span>(<span class="nu">0</span>);
+
+        <span class="ty">Map</span>&lt;<span class="ty">Boolean</span>, <span class="ty">List</span>&lt;<span class="ty">String</span>&gt;&gt; aboveBelow =
+            emps.<span class="nm">stream</span>()
+                .<span class="nm">collect</span>(<span class="ty">Collectors</span>.<span class="nm">partitioningBy</span>(
+                    e <span class="lm">-></span> e.salary() &gt; avg,
+                    <span class="ty">Collectors</span>.<span class="nm">mapping</span>(<span class="ty">Employee</span>::name, <span class="ty">Collectors</span>.<span class="nm">toList</span>())
+                ));
+
+        <span class="ty">System</span>.out.<span class="nm">println</span>(<span class="st">"Above avg: "</span> + aboveBelow.<span class="nm">get</span>(<span class="kw">true</span>));
+        <span class="ty">System</span>.out.<span class="nm">println</span>(<span class="st">"Below avg: "</span> + aboveBelow.<span class="nm">get</span>(<span class="kw">false</span>));
+    }
+
+    <span class="kw">record</span> <span class="ty">Employee</span>(<span class="ty">String</span> name, <span class="ty">double</span> salary) {}
+}</code></pre>
+    </div>
+
+    <div class="out"><div class="out-lbl">Output</div>Even: [2,4,6,8,10] | Odd: [1,3,5,7,9]<br>Above avg: [Alice, Eve] | Below avg: [Bob, Dan]</div>
+
+    <div class="kp">
+      <div class="slabel">key insight</div>
+      <ul>
+        <li><strong>partitioningBy vs groupingBy</strong>: partitioning always gives exactly 2 groups (true/false). groupingBy can give N groups. Both keys always exist in the result map.</li>
+        <li>Combine with <code class="il">Collectors.mapping()</code> downstream to transform each partition's elements.</li>
+        <li>More efficient than two separate <code class="il">filter()</code> calls — single pass over the data.</li>
+        <li>Interviewer tip: <em>"When would you use partitioningBy over groupingBy?"</em> → When your classifier is a <code class="il">Predicate</code> (binary decision).</li>
+      </ul>
+    </div>
+    <div class="cpx">
+      <div class="cpx-pill"><span class="cl">Time</span> <span class="cv">O(n)</span></div>
+      <div class="cpx-pill"><span class="cl">Passes</span> <span class="cv">1 (vs 2 with filter)</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Q6 ═══ -->
+<div class="qcard" id="q6" style="--accent-color:var(--cyan)">
+  <div class="qcard-header">
+    <span class="qnum c">Q 06</span>
+    <div class="qh-right">
+      <div class="qtitle">Collectors.joining — String Aggregation</div>
+      <div class="qmeta">
+        <span class="qchip diff-e">Easy</span>
+        <span class="qchip topic-chip">joining</span>
+        <span class="qchip topic-chip">delimiter</span>
+        <span class="qchip topic-chip">prefix/suffix</span>
+      </div>
+    </div>
+  </div>
+  <div class="qbody">
+    <div class="slabel">problem</div>
+    <p class="explain">Concatenate a list of strings with a delimiter, optional prefix and suffix. <code class="il">Collectors.joining()</code> is the go-to for CSV generation, SQL IN-clause building, JSON-like strings, and any list-to-string transformation.</p>
+
+    <div class="slabel">solution</div>
+    <div class="cb">
+      <div class="cb-head"><div class="cb-dots"><div class="cb-dot"></div><div class="cb-dot"></div><div class="cb-dot"></div></div><span class="cb-lang">Java</span></div>
+      <pre><code><span class="kw">import</span> java.util.*;
+<span class="kw">import</span> java.util.stream.*;
+
+<span class="kw">public class</span> <span class="ty">Q6Joining</span> {
+
+    <span class="kw">public static void</span> <span class="nm">main</span>(<span class="ty">String</span>[] args) {
+
+        <span class="ty">List</span>&lt;<span class="ty">String</span>&gt; names = <span class="ty">List</span>.<span class="nm">of</span>(<span class="st">"Alice"</span>, <span class="st">"Bob"</span>, <span class="st">"Charlie"</span>, <span class="st">"Diana"</span>);
+
+        <span class="cm">// ── 1. Plain concatenation ──</span>
+        <span class="ty">String</span> plain = names.<span class="nm">stream</span>()
+                             .<span class="nm">collect</span>(<span class="ty">Collectors</span>.<span class="nm">joining</span>());
+        <span class="ty">System</span>.out.<span class="nm">println</span>(plain); <span class="cm">// AliceBobCharlieDiana</span>
+
+        <span class="cm">// ── 2. With delimiter ──</span>
+        <span class="ty">String</span> csv = names.<span class="nm">stream</span>()
+                          .<span class="nm">collect</span>(<span class="ty">Collectors</span>.<span class="nm">joining</span>(<span class="st">", "</span>));
+        <span class="ty">System</span>.out.<span class="nm">println</span>(csv); <span class="cm">// Alice, Bob, Charlie, Diana</span>
+
+        <span class="cm">// ── 3. With delimiter + prefix + suffix ──</span>
+        <span class="ty">String</span> sql = names.<span class="nm">stream</span>()
+                         .<span class="nm">map</span>(n <span class="lm">-></span> <span class="st">"'"</span> + n + <span class="st">"'"</span>)           <span class="cm">// wrap in single quotes</span>
+                         .<span class="nm">collect</span>(<span class="ty">Collectors</span>.<span class="nm">joining</span>(<span class="st">", "</span>, <span class="st">"IN ("</span>, <span class="st">")"</span>));
+        <span class="ty">System</span>.out.<span class="nm">println</span>(sql);
+        <span class="cm">// IN ('Alice', 'Bob', 'Charlie', 'Diana')</span>
+
+        <span class="cm">// ── 4. joining with objects — map then join ──</span>
+        <span class="ty">List</span>&lt;<span class="ty">Employee</span>&gt; emps = <span class="ty">List</span>.<span class="nm">of</span>(
+            <span class="kw">new</span> <span class="ty">Employee</span>(<span class="st">"Alice"</span>, <span class="nu">90000</span>),
+            <span class="kw">new</span> <span class="ty">Employee</span>(<span class="st">"Bob"</span>,   <span class="nu">50000</span>)
+        );
+
+        <span class="ty">String</span> report = emps.<span class="nm">stream</span>()
+            .<span class="nm">map</span>(e <span class="lm">-></span> e.name() + <span class="st">"("</span> + e.salary() + <span class="st">")"</span>)
+            .<span class="nm">collect</span>(<span class="ty">Collectors</span>.<span class="nm">joining</span>(<span class="st">" | "</span>, <span class="st">"[Employees: "</span>, <span class="st">"]"</span>));
+        <span class="ty">System</span>.out.<span class="nm">println</span>(report);
+        <span class="cm">// [Employees: Alice(90000.0) | Bob(50000.0)]</span>
+
+        <span class="cm">// ── 5. groupingBy + joining downstream ──</span>
+        <span class="ty">List</span>&lt;<span class="ty">Employee</span>&gt; team = <span class="ty">List</span>.<span class="nm">of</span>(
+            <span class="kw">new</span> <span class="ty">Employee</span>(<span class="st">"Alice"</span>, <span class="nu">90000</span>, <span class="st">"Eng"</span>),
+            <span class="kw">new</span> <span class="ty">Employee</span>(<span class="st">"Bob"</span>,   <span class="nu">50000</span>, <span class="st">"HR"</span>),
+            <span class="kw">new</span> <span class="ty">Employee</span>(<span class="st">"Eve"</span>,   <span class="nu">72000</span>, <span class="st">"Eng"</span>)
+        );
+
+        <span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="ty">String</span>&gt; deptRoster = team.<span class="nm">stream</span>()
+            .<span class="nm">collect</span>(<span class="ty">Collectors</span>.<span class="nm">groupingBy</span>(
+                <span class="ty">Employee</span>::dept,
+                <span class="ty">Collectors</span>.<span class="nm">mapping</span>(<span class="ty">Employee</span>::name,      <span class="cm">// extract name</span>
+                    <span class="ty">Collectors</span>.<span class="nm">joining</span>(<span class="st">", "</span>))            <span class="cm">// join names</span>
+            ));
+        <span class="ty">System</span>.out.<span class="nm">println</span>(deptRoster);
+        <span class="cm">// {Eng=Alice, Eve, HR=Bob}</span>
+    }
+
+    <span class="kw">record</span> <span class="ty">Employee</span>(<span class="ty">String</span> name, <span class="ty">double</span> salary, <span class="ty">String</span> dept) {
+        <span class="kw">Employee</span>(<span class="ty">String</span> name, <span class="ty">double</span> salary) { <span class="kw">this</span>(name, salary, <span class="st">""</span>); }
+    }
+}</code></pre>
+    </div>
+
+    <div class="out"><div class="out-lbl">Output</div>Alice, Bob, Charlie, Diana<br>IN ('Alice', 'Bob', 'Charlie', 'Diana')<br>{Eng=Alice, Eve, HR=Bob}</div>
+
+    <div class="kp">
+      <div class="slabel">key insight</div>
+      <ul>
+        <li><code class="il">joining(delim, prefix, suffix)</code> — produces exactly one String. Much more efficient than manual <code class="il">StringBuilder</code> in a loop.</li>
+        <li>Use <code class="il">map()</code> before <code class="il">joining()</code> to transform objects to their string representation first.</li>
+        <li><strong>groupingBy + mapping + joining</strong> = produces a <code class="il">Map&lt;K, String&gt;</code> — a common report-generation pattern.</li>
+        <li>Interview use case: "Generate a CSV row", "Build SQL IN clause", "Create comma-separated tag list".</li>
+      </ul>
+    </div>
+    <div class="cpx">
+      <div class="cpx-pill"><span class="cl">Time</span> <span class="cv">O(n)</span></div>
+      <div class="cpx-pill"><span class="cl">Space</span> <span class="cv">O(total chars)</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Q7 ═══ -->
+<div class="qcard" id="q7" style="--accent-color:var(--violet)">
+  <div class="qcard-header">
+    <span class="qnum v">Q 07</span>
+    <div class="qh-right">
+      <div class="qtitle">sorted + distinct + limit + skip  |  Stream Slicing</div>
+      <div class="qmeta">
+        <span class="qchip diff-e">Easy</span>
+        <span class="qchip topic-chip">sorted</span>
+        <span class="qchip topic-chip">distinct</span>
+        <span class="qchip topic-chip">limit/skip</span>
+        <span class="qchip topic-chip">Comparator</span>
+      </div>
+    </div>
+  </div>
+  <div class="qbody">
+    <div class="slabel">problem</div>
+    <p class="explain">Find the 2nd highest salary. Get top 3 unique scores in descending order. These are real interview questions testing <code class="il">sorted(Comparator)</code>, <code class="il">distinct()</code>, <code class="il">skip()</code>, and <code class="il">limit()</code> together.</p>
+
+    <div class="slabel">solution</div>
+    <div class="cb">
+      <div class="cb-head"><div class="cb-dots"><div class="cb-dot"></div><div class="cb-dot"></div><div class="cb-dot"></div></div><span class="cb-lang">Java</span></div>
+      <pre><code><span class="kw">import</span> java.util.*;
+<span class="kw">import</span> java.util.stream.*;
+
+<span class="kw">public class</span> <span class="ty">Q7SortedDistinctLimit</span> {
+
+    <span class="kw">public static void</span> <span class="nm">main</span>(<span class="ty">String</span>[] args) {
+
+        <span class="ty">List</span>&lt;<span class="ty">Integer</span>&gt; scores = <span class="ty">Arrays</span>.<span class="nm">asList</span>(<span class="nu">85</span>,<span class="nu">92</span>,<span class="nu">78</span>,<span class="nu">92</span>,<span class="nu">65</span>,<span class="nu">100</span>,<span class="nu">78</span>,<span class="nu">88</span>);
+
+        <span class="cm">// ── 1. Top 3 unique scores (descending) ──</span>
+        <span class="ty">List</span>&lt;<span class="ty">Integer</span>&gt; top3 = scores.<span class="nm">stream</span>()
+            .<span class="nm">distinct</span>()                               <span class="cm">// remove duplicates</span>
+            .<span class="nm">sorted</span>(<span class="ty">Comparator</span>.<span class="nm">reverseOrder</span>())       <span class="cm">// desc sort</span>
+            .<span class="nm">limit</span>(<span class="nu">3</span>)                                 <span class="cm">// take first 3</span>
+            .<span class="nm">collect</span>(<span class="ty">Collectors</span>.<span class="nm">toList</span>());
+        <span class="ty">System</span>.out.<span class="nm">println</span>(<span class="st">"Top 3: "</span> + top3); <span class="cm">// [100, 92, 88]</span>
+
+        <span class="cm">// ── 2. 2nd highest salary ──</span>
+        <span class="ty">List</span>&lt;<span class="ty">Employee</span>&gt; emps = <span class="ty">List</span>.<span class="nm">of</span>(
+            <span class="kw">new</span> <span class="ty">Employee</span>(<span class="st">"Alice"</span>, <span class="nu">90000</span>), <span class="kw">new</span> <span class="ty">Employee</span>(<span class="st">"Bob"</span>, <span class="nu">45000</span>),
+            <span class="kw">new</span> <span class="ty">Employee</span>(<span class="st">"Eve"</span>,   <span class="nu">90000</span>), <span class="kw">new</span> <span class="ty">Employee</span>(<span class="st">"Dan"</span>, <span class="nu">72000</span>)
+        );
+
+        <span class="ty">Optional</span>&lt;<span class="ty">Double</span>&gt; secondHighest = emps.<span class="nm">stream</span>()
+            .<span class="nm">map</span>(<span class="ty">Employee</span>::salary)
+            .<span class="nm">distinct</span>()                              <span class="cm">// handle ties: 90000 appears twice</span>
+            .<span class="nm">sorted</span>(<span class="ty">Comparator</span>.<span class="nm">reverseOrder</span>())
+            .<span class="nm">skip</span>(<span class="nu">1</span>)                                 <span class="cm">// skip the highest</span>
+            .<span class="nm">findFirst</span>();                            <span class="cm">// get next one</span>
+        <span class="ty">System</span>.out.<span class="nm">println</span>(<span class="st">"2nd highest: "</span> + secondHighest.<span class="nm">orElse</span>(-<span class="nu">1.0</span>));
+        <span class="cm">// 72000.0</span>
+
+        <span class="cm">// ── 3. Custom Comparator — sort employees by salary desc, name asc ──</span>
+        <span class="ty">List</span>&lt;<span class="ty">Employee</span>&gt; sorted = emps.<span class="nm">stream</span>()
+            .<span class="nm">sorted</span>(<span class="ty">Comparator</span>.<span class="nm">comparingDouble</span>(<span class="ty">Employee</span>::salary)
+                               .<span class="nm">reversed</span>()
+                               .<span class="nm">thenComparing</span>(<span class="ty">Employee</span>::name))   <span class="cm">// secondary sort</span>
+            .<span class="nm">collect</span>(<span class="ty">Collectors</span>.<span class="nm">toList</span>());
+        sorted.<span class="nm">forEach</span>(e <span class="lm">-></span> <span class="ty">System</span>.out.<span class="nm">println</span>(e.name() + <span class="st">" → "</span> + e.salary()));
+
+        <span class="cm">// ── 4. Pagination with skip + limit ──</span>
+        <span class="ty">int</span> page = <span class="nu">1</span>, pageSize = <span class="nu">2</span>;
+        <span class="ty">List</span>&lt;<span class="ty">Integer</span>&gt; page2 = scores.<span class="nm">stream</span>()
+            .<span class="nm">sorted</span>()
+            .<span class="nm">skip</span>((long) page * pageSize)    <span class="cm">// skip first page</span>
+            .<span class="nm">limit</span>(pageSize)                 <span class="cm">// take page size</span>
+            .<span class="nm">collect</span>(<span class="ty">Collectors</span>.<span class="nm">toList</span>());
+        <span class="ty">System</span>.out.<span class="nm">println</span>(<span class="st">"Page 2: "</span> + page2);
+    }
+
+    <span class="kw">record</span> <span class="ty">Employee</span>(<span class="ty">String</span> name, <span class="ty">double</span> salary) {}
+}</code></pre>
+    </div>
+
+    <div class="out"><div class="out-lbl">Output</div>Top 3: [100, 92, 88]<br>2nd highest: 72000.0<br>Alice → 90000.0 | Eve → 90000.0 | Dan → 72000.0 | Bob → 45000.0</div>
+
+    <div class="kp">
+      <div class="slabel">key insight</div>
+      <ul>
+        <li><strong>Nth highest salary</strong> = <code class="il">distinct() → sorted(reverseOrder()) → skip(N-1) → findFirst()</code>. One of the most asked Stream interview questions.</li>
+        <li><code class="il">Comparator.comparing(f).reversed().thenComparing(g)</code> — chaining comparators for multi-field sorting.</li>
+        <li><code class="il">skip(n) + limit(size)</code> = database-style pagination in a single pipeline.</li>
+        <li><code class="il">distinct()</code> uses <code class="il">equals/hashCode</code> — ensure your objects implement them correctly if using custom types.</li>
+      </ul>
+    </div>
+    <div class="cpx">
+      <div class="cpx-pill"><span class="cl">Sort</span> <span class="cv">O(n log n)</span></div>
+      <div class="cpx-pill"><span class="cl">distinct</span> <span class="cv">O(n)</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Q8 ═══ -->
+<div class="qcard" id="q8" style="--accent-color:var(--emerald)">
+  <div class="qcard-header">
+    <span class="qnum e">Q 08</span>
+    <div class="qh-right">
+      <div class="qtitle">Collectors.toMap — Build Custom Maps</div>
+      <div class="qmeta">
+        <span class="qchip diff-m">Medium</span>
+        <span class="qchip topic-chip">toMap</span>
+        <span class="qchip topic-chip">merge function</span>
+        <span class="qchip topic-chip">LinkedHashMap</span>
+      </div>
+    </div>
+  </div>
+  <div class="qbody">
+    <div class="slabel">problem</div>
+    <p class="explain">Convert a list to a Map — id→object, name→salary, with duplicate handling. <code class="il">Collectors.toMap()</code> is frequently asked because of the <strong>duplicate key exception</strong> trap that catches many candidates off-guard.</p>
+
+    <div class="slabel">solution</div>
+    <div class="cb">
+      <div class="cb-head"><div class="cb-dots"><div class="cb-dot"></div><div class="cb-dot"></div><div class="cb-dot"></div></div><span class="cb-lang">Java</span></div>
+      <pre><code><span class="kw">import</span> java.util.*;
+<span class="kw">import</span> java.util.stream.*;
+<span class="kw">import</span> java.util.function.*;
+
+<span class="kw">record</span> <span class="ty">Employee</span>(<span class="ty">int</span> id, <span class="ty">String</span> name, <span class="ty">String</span> dept, <span class="ty">double</span> salary) {}
+
+<span class="kw">public class</span> <span class="ty">Q8ToMap</span> {
+
+    <span class="kw">public static void</span> <span class="nm">main</span>(<span class="ty">String</span>[] args) {
+
+        <span class="ty">List</span>&lt;<span class="ty">Employee</span>&gt; emps = <span class="ty">List</span>.<span class="nm">of</span>(
+            <span class="kw">new</span> <span class="ty">Employee</span>(<span class="nu">1</span>, <span class="st">"Alice"</span>,   <span class="st">"Eng"</span>,     <span class="nu">90000</span>),
+            <span class="kw">new</span> <span class="ty">Employee</span>(<span class="nu">2</span>, <span class="st">"Bob"</span>,     <span class="st">"HR"</span>,      <span class="nu">50000</span>),
+            <span class="kw">new</span> <span class="ty">Employee</span>(<span class="nu">3</span>, <span class="st">"Charlie"</span>, <span class="st">"Eng"</span>,     <span class="nu">75000</span>)
+        );
+
+        <span class="cm">// ── 1. Basic: id → Employee object ──</span>
+        <span class="ty">Map</span>&lt;<span class="ty">Integer</span>, <span class="ty">Employee</span>&gt; idMap =
+            emps.<span class="nm">stream</span>()
+                .<span class="nm">collect</span>(<span class="ty">Collectors</span>.<span class="nm">toMap</span>(
+                    <span class="ty">Employee</span>::id,          <span class="cm">// key extractor</span>
+                    <span class="ty">Function</span>.<span class="nm">identity</span>()   <span class="cm">// value extractor (whole object)</span>
+                ));
+        <span class="ty">System</span>.out.<span class="nm">println</span>(idMap.<span class="nm">get</span>(<span class="nu">1</span>).name()); <span class="cm">// Alice</span>
+
+        <span class="cm">// ── 2. name → salary ──</span>
+        <span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="ty">Double</span>&gt; salaryMap =
+            emps.<span class="nm">stream</span>()
+                .<span class="nm">collect</span>(<span class="ty">Collectors</span>.<span class="nm">toMap</span>(<span class="ty">Employee</span>::name, <span class="ty">Employee</span>::salary));
+
+        <span class="cm">// ── 3. DUPLICATE KEY TRAP — merge function required ──</span>
+        <span class="ty">List</span>&lt;<span class="ty">Employee</span>&gt; withDups = <span class="ty">List</span>.<span class="nm">of</span>(
+            <span class="kw">new</span> <span class="ty">Employee</span>(<span class="nu">1</span>, <span class="st">"Alice"</span>,   <span class="st">"Eng"</span>, <span class="nu">90000</span>),
+            <span class="kw">new</span> <span class="ty">Employee</span>(<span class="nu">1</span>, <span class="st">"Alice_v2"</span>,<span class="st">"HR"</span>,  <span class="nu">95000</span>)  <span class="cm">// same id!</span>
+        );
+
+        <span class="cm">// Without merge → throws IllegalStateException: Duplicate key</span>
+        <span class="cm">// With merge → keep last value on conflict:</span>
+        <span class="ty">Map</span>&lt;<span class="ty">Integer</span>, <span class="ty">Employee</span>&gt; safeMerge =
+            withDups.<span class="nm">stream</span>()
+                    .<span class="nm">collect</span>(<span class="ty">Collectors</span>.<span class="nm">toMap</span>(
+                        <span class="ty">Employee</span>::id,
+                        <span class="ty">Function</span>.<span class="nm">identity</span>(),
+                        (existing, newer) <span class="lm">-></span> newer   <span class="cm">// merge: keep newer</span>
+                    ));
+
+        <span class="cm">// ── 4. toMap with LinkedHashMap to preserve order ──</span>
+        <span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="ty">Double</span>&gt; ordered =
+            emps.<span class="nm">stream</span>()
+                .<span class="nm">sorted</span>(<span class="ty">Comparator</span>.<span class="nm">comparingDouble</span>(<span class="ty">Employee</span>::salary).<span class="nm">reversed</span>())
+                .<span class="nm">collect</span>(<span class="ty">Collectors</span>.<span class="nm">toMap</span>(
+                    <span class="ty">Employee</span>::name,
+                    <span class="ty">Employee</span>::salary,
+                    (a, b) <span class="lm">-></span> a,             <span class="cm">// no duplicates, but required for 4-arg form</span>
+                    <span class="ty">LinkedHashMap</span>::new      <span class="cm">// preserve insertion order</span>
+                ));
+        <span class="ty">System</span>.out.<span class="nm">println</span>(ordered);
+        <span class="cm">// {Alice=90000.0, Charlie=75000.0, Bob=50000.0}</span>
+    }
+}</code></pre>
+    </div>
+
+    <div class="out"><div class="out-lbl">Output</div>Alice<br>{Alice=90000.0, Charlie=75000.0, Bob=50000.0}</div>
+
+    <div class="kp">
+      <div class="slabel">key insight</div>
+      <ul>
+        <li><strong>CRITICAL trap</strong>: <code class="il">toMap()</code> throws <code class="il">IllegalStateException: Duplicate key</code> without a merge function. Always include one when duplicates are possible.</li>
+        <li><code class="il">Function.identity()</code> = <code class="il">x -> x</code>. Use it as value extractor when you want the whole object.</li>
+        <li><strong>4-arg toMap</strong>: <code class="il">toMap(keyFn, valFn, mergeFn, mapSupplier)</code> — the supplier controls map type (<code class="il">LinkedHashMap::new</code> for ordering, <code class="il">TreeMap::new</code> for sorted keys).</li>
+        <li>Common merge strategies: <code class="il">(a,b) -> a</code> keep first, <code class="il">(a,b) -> b</code> keep last, <code class="il">(a,b) -> a+b</code> combine values.</li>
+      </ul>
+    </div>
+    <div class="cpx">
+      <div class="cpx-pill"><span class="cl">Time</span> <span class="cv">O(n)</span></div>
+      <div class="cpx-pill"><span class="cl">Space</span> <span class="cv">O(n)</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Q9 ═══ -->
+<div class="qcard" id="q9" style="--accent-color:var(--amber)">
+  <div class="qcard-header">
+    <span class="qnum a">Q 09</span>
+    <div class="qh-right">
+      <div class="qtitle">mapToInt / Statistics / IntSummaryStatistics</div>
+      <div class="qmeta">
+        <span class="qchip diff-e">Easy</span>
+        <span class="qchip topic-chip">mapToInt</span>
+        <span class="qchip topic-chip">sum/avg/min/max</span>
+        <span class="qchip topic-chip">IntSummaryStatistics</span>
+      </div>
+    </div>
+  </div>
+  <div class="qbody">
+    <div class="slabel">problem</div>
+    <p class="explain">Compute sum, average, min, max, and count for a numeric field in a collection. <code class="il">mapToInt/mapToDouble</code> converts to primitive streams, eliminating boxing overhead. <code class="il">summaryStatistics()</code> gets everything in one pass.</p>
+
+    <div class="slabel">solution</div>
+    <div class="cb">
+      <div class="cb-head"><div class="cb-dots"><div class="cb-dot"></div><div class="cb-dot"></div><div class="cb-dot"></div></div><span class="cb-lang">Java</span></div>
+      <pre><code><span class="kw">import</span> java.util.*;
+<span class="kw">import</span> java.util.stream.*;
+
+<span class="kw">record</span> <span class="ty">Product</span>(<span class="ty">String</span> name, <span class="ty">int</span> quantity, <span class="ty">double</span> price) {}
+
+<span class="kw">public class</span> <span class="ty">Q9Statistics</span> {
+
+    <span class="kw">public static void</span> <span class="nm">main</span>(<span class="ty">String</span>[] args) {
+
+        <span class="ty">List</span>&lt;<span class="ty">Product</span>&gt; products = <span class="ty">List</span>.<span class="nm">of</span>(
+            <span class="kw">new</span> <span class="ty">Product</span>(<span class="st">"Apple"</span>,  <span class="nu">100</span>, <span class="nu">0.5</span>),
+            <span class="kw">new</span> <span class="ty">Product</span>(<span class="st">"Banana"</span>, <span class="nu">200</span>, <span class="nu">0.3</span>),
+            <span class="kw">new</span> <span class="ty">Product</span>(<span class="st">"Cherry"</span>,  <span class="nu">50</span>, <span class="nu">2.0</span>),
+            <span class="kw">new</span> <span class="ty">Product</span>(<span class="st">"Mango"</span>,  <span class="nu">150</span>, <span class="nu">1.5</span>)
+        );
+
+        <span class="cm">// ── 1. Individual aggregations ──</span>
+        <span class="ty">int</span> totalQty    = products.<span class="nm">stream</span>().<span class="nm">mapToInt</span>(<span class="ty">Product</span>::quantity).<span class="nm">sum</span>();
+        <span class="ty">double</span> avgPrice = products.<span class="nm">stream</span>().<span class="nm">mapToDouble</span>(<span class="ty">Product</span>::price).<span class="nm">average</span>().<span class="nm">orElse</span>(<span class="nu">0</span>);
+        <span class="ty">int</span> maxQty      = products.<span class="nm">stream</span>().<span class="nm">mapToInt</span>(<span class="ty">Product</span>::quantity).<span class="nm">max</span>().<span class="nm">orElse</span>(<span class="nu">0</span>);
+        <span class="ty">double</span> minPrice = products.<span class="nm">stream</span>().<span class="nm">mapToDouble</span>(<span class="ty">Product</span>::price).<span class="nm">min</span>().<span class="nm">orElse</span>(<span class="nu">0</span>);
+
+        <span class="ty">System</span>.out.<span class="nm">printf</span>(<span class="st">"Total qty: %d, Avg price: %.2f%n"</span>, totalQty, avgPrice);
+
+        <span class="cm">// ── 2. summaryStatistics() — all in ONE pass ──</span>
+        <span class="ty">IntSummaryStatistics</span> stats = products.<span class="nm">stream</span>()
+            .<span class="nm">mapToInt</span>(<span class="ty">Product</span>::quantity)
+            .<span class="nm">summaryStatistics</span>();
+
+        <span class="ty">System</span>.out.<span class="nm">println</span>(<span class="st">"Count:   "</span> + stats.<span class="nm">getCount</span>());  <span class="cm">// 4</span>
+        <span class="ty">System</span>.out.<span class="nm">println</span>(<span class="st">"Sum:     "</span> + stats.<span class="nm">getSum</span>());    <span class="cm">// 500</span>
+        <span class="ty">System</span>.out.<span class="nm">println</span>(<span class="st">"Min:     "</span> + stats.<span class="nm">getMin</span>());    <span class="cm">// 50</span>
+        <span class="ty">System</span>.out.<span class="nm">println</span>(<span class="st">"Max:     "</span> + stats.<span class="nm">getMax</span>());    <span class="cm">// 200</span>
+        <span class="ty">System</span>.out.<span class="nm">printf</span>(<span class="st">"Average: %.1f%n"</span>, stats.<span class="nm">getAverage</span>());
+
+        <span class="cm">// ── 3. Total revenue = quantity × price ──</span>
+        <span class="ty">double</span> revenue = products.<span class="nm">stream</span>()
+            .<span class="nm">mapToDouble</span>(p <span class="lm">-></span> p.quantity() * p.price())
+            .<span class="nm">sum</span>();
+        <span class="ty">System</span>.out.<span class="nm">printf</span>(<span class="st">"Revenue: $%.2f%n"</span>, revenue); <span class="cm">// $460.00</span>
+
+        <span class="cm">// ── 4. Collectors.summarizingInt (same as mapToInt().summaryStatistics()) ──</span>
+        <span class="ty">IntSummaryStatistics</span> s2 =
+            products.<span class="nm">stream</span>()
+                    .<span class="nm">collect</span>(<span class="ty">Collectors</span>.<span class="nm">summarizingInt</span>(<span class="ty">Product</span>::quantity));
+        <span class="ty">System</span>.out.<span class="nm">println</span>(s2);
+
+        <span class="cm">// ── 5. IntStream.range — index-based processing ──</span>
+        <span class="ty">IntStream</span>.<span class="nm">range</span>(<span class="nu">0</span>, products.<span class="nm">size</span>())
+                 .<span class="nm">filter</span>(i <span class="lm">-></span> i % <span class="nu">2</span> == <span class="nu">0</span>)               <span class="cm">// even indices</span>
+                 .<span class="nm">mapToObj</span>(products::<span class="nm">get</span>)              <span class="cm">// int → Product</span>
+                 .<span class="nm">map</span>(<span class="ty">Product</span>::name)
+                 .<span class="nm">forEach</span>(<span class="ty">System</span>.out::println);       <span class="cm">// Apple, Cherry</span>
+    }
+}</code></pre>
+    </div>
+
+    <div class="out"><div class="out-lbl">Output</div>Total qty: 500, Avg price: 1.08<br>Count: 4 | Sum: 500 | Min: 50 | Max: 200 | Average: 125.0<br>Revenue: $460.00</div>
+
+    <div class="kp">
+      <div class="slabel">key insight</div>
+      <ul>
+        <li><strong>mapToInt/mapToDouble/mapToLong</strong> → primitive specialised streams. Avoids boxing of <code class="il">Stream&lt;Integer&gt;</code> — significant performance gain at scale.</li>
+        <li><code class="il">summaryStatistics()</code> computes count, sum, min, max, average in <strong>one single pass</strong> — much better than 5 separate stream operations.</li>
+        <li><code class="il">average()</code>, <code class="il">min()</code>, <code class="il">max()</code> return <code class="il">OptionalDouble/OptionalInt</code> — always use <code class="il">.orElse()</code> to handle empty streams.</li>
+        <li><code class="il">IntStream.range(0,n).mapToObj(list::get)</code> = index-aware stream — useful for filtering by position.</li>
+      </ul>
+    </div>
+    <div class="cpx">
+      <div class="cpx-pill"><span class="cl">Time</span> <span class="cv">O(n)</span></div>
+      <div class="cpx-pill"><span class="cl">Boxing overhead</span> <span class="cv">Eliminated</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Q10 ═══ -->
+<div class="qcard" id="q10" style="--accent-color:var(--rose)">
+  <div class="qcard-header">
+    <span class="qnum r">Q 10</span>
+    <div class="qh-right">
+      <div class="qtitle">Parallel Streams + Optional — Advanced Patterns</div>
+      <div class="qmeta">
+        <span class="qchip diff-h">Advanced</span>
+        <span class="qchip topic-chip">parallelStream</span>
+        <span class="qchip topic-chip">Optional</span>
+        <span class="qchip topic-chip">peek</span>
+        <span class="qchip topic-chip">teeing</span>
+      </div>
+    </div>
+  </div>
+  <div class="qbody">
+    <div class="slabel">problem</div>
+    <p class="explain">Process a large dataset in parallel and use <code class="il">Optional</code> chains to safely handle absent values. Also demonstrates <code class="il">peek()</code> for debugging, and <code class="il">Collectors.teeing()</code> (Java 12) for dual aggregation.</p>
+
+    <div class="slabel">solution</div>
+    <div class="cb">
+      <div class="cb-head"><div class="cb-dots"><div class="cb-dot"></div><div class="cb-dot"></div><div class="cb-dot"></div></div><span class="cb-lang">Java</span></div>
+      <pre><code><span class="kw">import</span> java.util.*;
+<span class="kw">import</span> java.util.stream.*;
+<span class="kw">import</span> java.util.function.*;
+
+<span class="kw">record</span> <span class="ty">Transaction</span>(<span class="ty">String</span> id, <span class="ty">double</span> amount, <span class="ty">String</span> type) {}
+
+<span class="kw">public class</span> <span class="ty">Q10Advanced</span> {
+
+    <span class="kw">public static void</span> <span class="nm">main</span>(<span class="ty">String</span>[] args) {
+
+        <span class="ty">List</span>&lt;<span class="ty">Transaction</span>&gt; txns = <span class="ty">List</span>.<span class="nm">of</span>(
+            <span class="kw">new</span> <span class="ty">Transaction</span>(<span class="st">"T1"</span>, <span class="nu">500.0</span>,  <span class="st">"CREDIT"</span>),
+            <span class="kw">new</span> <span class="ty">Transaction</span>(<span class="st">"T2"</span>, <span class="nu">200.0</span>,  <span class="st">"DEBIT"</span>),
+            <span class="kw">new</span> <span class="ty">Transaction</span>(<span class="st">"T3"</span>, <span class="nu">1500.0</span>, <span class="st">"CREDIT"</span>),
+            <span class="kw">new</span> <span class="ty">Transaction</span>(<span class="st">"T4"</span>, <span class="nu">100.0</span>,  <span class="st">"DEBIT"</span>),
+            <span class="kw">new</span> <span class="ty">Transaction</span>(<span class="st">"T5"</span>, <span class="nu">3000.0</span>, <span class="st">"CREDIT"</span>)
+        );
+
+        <span class="cm">// ── 1. parallelStream — sum in parallel ──</span>
+        <span class="ty">double</span> parallelSum = txns.<span class="nm">parallelStream</span>()  <span class="cm">// uses ForkJoinPool.commonPool()</span>
+            .<span class="nm">mapToDouble</span>(<span class="ty">Transaction</span>::amount)
+            .<span class="nm">sum</span>();
+        <span class="ty">System</span>.out.<span class="nm">println</span>(<span class="st">"Total: "</span> + parallelSum); <span class="cm">// 5300.0</span>
+
+        <span class="cm">// ── 2. peek() — debug stream without consuming ──</span>
+        <span class="ty">List</span>&lt;<span class="ty">String</span>&gt; creditIds = txns.<span class="nm">stream</span>()
+            .<span class="nm">filter</span>(t <span class="lm">-></span> t.type().<span class="nm">equals</span>(<span class="st">"CREDIT"</span>))
+            .<span class="nm">peek</span>(t <span class="lm">-></span> <span class="ty">System</span>.out.<span class="nm">println</span>(<span class="st">"Processing: "</span> + t.id())) <span class="cm">// debug tap</span>
+            .<span class="nm">map</span>(<span class="ty">Transaction</span>::id)
+            .<span class="nm">collect</span>(<span class="ty">Collectors</span>.<span class="nm">toList</span>());
+        <span class="ty">System</span>.out.<span class="nm">println</span>(creditIds); <span class="cm">// [T1, T3, T5]</span>
+
+        <span class="cm">// ── 3. Optional chain — safe value extraction ──</span>
+        <span class="ty">Optional</span>&lt;<span class="ty">Transaction</span>&gt; largestCredit =
+            txns.<span class="nm">stream</span>()
+                .<span class="nm">filter</span>(t <span class="lm">-></span> t.type().<span class="nm">equals</span>(<span class="st">"CREDIT"</span>))
+                .<span class="nm">max</span>(<span class="ty">Comparator</span>.<span class="nm">comparingDouble</span>(<span class="ty">Transaction</span>::amount));
+
+        <span class="cm">// Optional pipeline — safe transformation chain</span>
+        <span class="ty">String</span> result = largestCredit
+            .<span class="nm">map</span>(t <span class="lm">-></span> t.id() + <span class="st">": $"</span> + t.amount())   <span class="cm">// transform if present</span>
+            .<span class="nm">orElse</span>(<span class="st">"No credits found"</span>);             <span class="cm">// fallback</span>
+        <span class="ty">System</span>.out.<span class="nm">println</span>(<span class="st">"Largest credit: "</span> + result); <span class="cm">// T5: $3000.0</span>
+
+        <span class="cm">// ── 4. Collectors.teeing (Java 12+) — two collectors at once ──</span>
+        <span class="cm">// Compute sum AND count in a single stream pass</span>
+        <span class="ty">record</span> <span class="ty">Stats</span>(<span class="ty">Double</span> sum, <span class="ty">Long</span> count) {}
+
+        <span class="ty">Stats</span> creditStats = txns.<span class="nm">stream</span>()
+            .<span class="nm">filter</span>(t <span class="lm">-></span> t.type().<span class="nm">equals</span>(<span class="st">"CREDIT"</span>))
+            .<span class="nm">collect</span>(<span class="ty">Collectors</span>.<span class="nm">teeing</span>(
+                <span class="ty">Collectors</span>.<span class="nm">summingDouble</span>(<span class="ty">Transaction</span>::amount),  <span class="cm">// collector 1: sum</span>
+                <span class="ty">Collectors</span>.<span class="nm">counting</span>(),                          <span class="cm">// collector 2: count</span>
+                <span class="ty">Stats</span>::new                                      <span class="cm">// merge into Stats</span>
+            ));
+        <span class="ty">System</span>.out.<span class="nm">printf</span>(<span class="st">"Credits: count=%d, sum=%.1f, avg=%.1f%n"</span>,
+            creditStats.count(), creditStats.sum(),
+            creditStats.sum() / creditStats.count());
+        <span class="cm">// Credits: count=3, sum=5000.0, avg=1666.7</span>
+
+        <span class="cm">// ── 5. anyMatch / allMatch / noneMatch ──</span>
+        <span class="kw">boolean</span> hasLarge  = txns.<span class="nm">stream</span>().<span class="nm">anyMatch</span>(t <span class="lm">-></span> t.amount() &gt; <span class="nu">1000</span>);  <span class="cm">// true</span>
+        <span class="kw">boolean</span> allCredit = txns.<span class="nm">stream</span>().<span class="nm">allMatch</span>(t <span class="lm">-></span> t.type().<span class="nm">equals</span>(<span class="st">"CREDIT"</span>)); <span class="cm">// false</span>
+        <span class="kw">boolean</span> noNeg     = txns.<span class="nm">stream</span>().<span class="nm">noneMatch</span>(t <span class="lm">-></span> t.amount() &lt; <span class="nu">0</span>);     <span class="cm">// true</span>
+
+        <span class="ty">System</span>.out.<span class="nm">println</span>(<span class="st">"hasLarge="</span>+hasLarge+<span class="st">" allCredit="</span>+allCredit+<span class="st">" noNeg="</span>+noNeg);
+    }
+}</code></pre>
+    </div>
+
+    <div class="out"><div class="out-lbl">Output</div>Total: 5300.0<br>Largest credit: T5: $3000.0<br>Credits: count=3, sum=5000.0, avg=1666.7<br>hasLarge=true allCredit=false noNeg=true</div>
+
+    <div class="kp">
+      <div class="slabel">key insight</div>
+      <ul>
+        <li><strong>parallelStream()</strong> uses ForkJoinPool. Beneficial only for CPU-bound operations on large datasets (n > 10,000). Do NOT use for IO-bound or order-sensitive operations.</li>
+        <li><code class="il">peek()</code> is an <em>intermediate</em> op for debugging — it lets you inspect elements mid-pipeline without consuming the stream. Remove in production code.</li>
+        <li><strong>Optional methods</strong>: <code class="il">map()</code> transforms, <code class="il">filter()</code> conditionally keeps, <code class="il">flatMap()</code> unwraps nested optionals, <code class="il">orElseGet(supplier)</code> is lazy (preferred over <code class="il">orElse()</code> when fallback is expensive).</li>
+        <li><code class="il">Collectors.teeing(c1, c2, merger)</code> (Java 12) — runs two collectors simultaneously. Avoids multiple stream traversals. <code class="il">anyMatch/allMatch/noneMatch</code> short-circuit — stop at first match.</li>
+      </ul>
+    </div>
+    <div class="cpx">
+      <div class="cpx-pill"><span class="cl">Parallel speedup</span> <span class="cv">~O(n/p)</span></div>
+      <div class="cpx-pill"><span class="cl">teeing</span> <span class="cv">1 pass</span></div>
+      <div class="cpx-pill"><span class="cl">anyMatch</span> <span class="cv">O(1) best</span></div>
+    </div>
+  </div>
+</div>
+
+<footer>// java-stream-api-interview · filter · map · flatMap · reduce · groupingBy · partitioningBy · toMap · parallel · optional</footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Top 10 Java Interview Questions</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Sora:wght@300;400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --surface: #0f1629;
+    --card: #131d35;
+    --border: #1e2d4f;
+    --accent: #00d4ff;
+    --accent2: #7c3aed;
+    --accent3: #10b981;
+    --accent4: #f59e0b;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --code-bg: #080c18;
+    --highlight: rgba(0,212,255,0.08);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Sora', sans-serif;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* Background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrapper { position: relative; z-index: 1; max-width: 960px; margin: 0 auto; padding: 48px 24px 80px; }
+
+  /* Header */
+  header { text-align: center; margin-bottom: 56px; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(0,212,255,0.1); border: 1px solid rgba(0,212,255,0.3);
+    color: var(--accent); font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; font-weight: 700; letter-spacing: 2px;
+    padding: 6px 16px; border-radius: 20px; margin-bottom: 24px;
+    text-transform: uppercase;
+  }
+  .badge::before { content: '◆'; font-size: 8px; }
+  header h1 {
+    font-size: clamp(32px, 5vw, 52px); font-weight: 800; letter-spacing: -1.5px;
+    background: linear-gradient(135deg, #fff 0%, var(--accent) 50%, var(--accent2) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    margin-bottom: 16px; line-height: 1.1;
+  }
+  header p { color: var(--muted); font-size: 16px; max-width: 560px; margin: 0 auto; }
+
+  /* Tags row */
+  .tags { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 20px; }
+  .tag {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 500;
+    padding: 4px 12px; border-radius: 4px; border: 1px solid;
+  }
+  .tag.blue  { color: var(--accent);  border-color: rgba(0,212,255,0.3);  background: rgba(0,212,255,0.06); }
+  .tag.green { color: var(--accent3); border-color: rgba(16,185,129,0.3); background: rgba(16,185,129,0.06); }
+  .tag.purple{ color: #a78bfa;        border-color: rgba(124,58,237,0.3); background: rgba(124,58,237,0.06); }
+  .tag.amber { color: var(--accent4); border-color: rgba(245,158,11,0.3); background: rgba(245,158,11,0.06); }
+
+  /* Table of contents */
+  .toc {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; padding: 28px 32px; margin-bottom: 48px;
+  }
+  .toc h2 { font-size: 13px; font-weight: 700; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 16px; font-family: 'JetBrains Mono', monospace; }
+  .toc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 8px; }
+  .toc-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 12px; border-radius: 8px; cursor: pointer;
+    transition: background 0.2s; text-decoration: none; color: var(--text);
+    font-size: 13px;
+  }
+  .toc-item:hover { background: var(--highlight); color: var(--accent); }
+  .toc-num {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700;
+    color: var(--accent); min-width: 24px;
+  }
+
+  /* Question cards */
+  .q-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 20px; margin-bottom: 32px; overflow: hidden;
+    transition: border-color 0.3s, transform 0.2s;
+  }
+  .q-card:hover { border-color: rgba(0,212,255,0.3); transform: translateY(-2px); }
+
+  .q-header {
+    display: flex; align-items: flex-start; gap: 16px;
+    padding: 28px 32px 20px; border-bottom: 1px solid var(--border);
+    background: linear-gradient(135deg, var(--card) 0%, rgba(0,212,255,0.03) 100%);
+  }
+  .q-num {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700;
+    color: var(--bg); background: var(--accent); padding: 4px 10px;
+    border-radius: 6px; white-space: nowrap; margin-top: 3px; flex-shrink: 0;
+  }
+  .q-num.purple { background: var(--accent2); }
+  .q-num.green  { background: var(--accent3); }
+  .q-num.amber  { background: var(--accent4); }
+
+  .q-title-block { flex: 1; }
+  .q-title { font-size: 18px; font-weight: 700; margin-bottom: 6px; letter-spacing: -0.3px; }
+  .q-meta { display: flex; gap: 8px; flex-wrap: wrap; }
+  .q-chip {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600;
+    padding: 3px 10px; border-radius: 4px; border: 1px solid;
+  }
+  .chip-diff-easy   { color: var(--accent3); border-color: rgba(16,185,129,0.4); background: rgba(16,185,129,0.08); }
+  .chip-diff-medium { color: var(--accent4); border-color: rgba(245,158,11,0.4); background: rgba(245,158,11,0.08); }
+  .chip-diff-hard   { color: #f87171;        border-color: rgba(248,113,113,0.4); background: rgba(248,113,113,0.08); }
+  .chip-topic       { color: #a78bfa;        border-color: rgba(167,139,250,0.3); background: rgba(167,139,250,0.06); }
+
+  .q-body { padding: 28px 32px; }
+
+  /* Section labels */
+  .section-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700;
+    color: var(--muted); letter-spacing: 2px; text-transform: uppercase;
+    margin-bottom: 10px; margin-top: 22px;
+  }
+  .section-label:first-child { margin-top: 0; }
+
+  .explanation { font-size: 14px; color: #94a3b8; line-height: 1.75; margin-bottom: 0; }
+
+  /* Code block */
+  .code-block {
+    background: var(--code-bg); border: 1px solid rgba(0,212,255,0.12);
+    border-radius: 12px; overflow: hidden; margin: 14px 0;
+    font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.65;
+  }
+  .code-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 16px; background: rgba(255,255,255,0.03);
+    border-bottom: 1px solid rgba(0,212,255,0.08);
+  }
+  .code-lang { font-size: 10px; color: var(--accent); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+  .code-dots { display: flex; gap: 6px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot:nth-child(1) { background: #ff5f57; }
+  .dot:nth-child(2) { background: #febc2e; }
+  .dot:nth-child(3) { background: #28c840; }
+  pre { padding: 18px 20px; overflow-x: auto; white-space: pre; }
+  code { color: #cdd6f4; }
+
+  /* Syntax highlighting */
+  .kw  { color: #cba6f7; font-weight: 600; } /* keywords */
+  .ty  { color: #89b4fa; } /* types */
+  .st  { color: #a6e3a1; } /* strings */
+  .cm  { color: #585b70; font-style: italic; } /* comments */
+  .nm  { color: #fab387; } /* names/methods */
+  .nu  { color: #f38ba8; } /* numbers */
+  .an  { color: #f9e2af; } /* annotations */
+
+  /* Key points */
+  .keypoints { margin-top: 18px; }
+  .keypoints ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .keypoints li {
+    display: flex; align-items: flex-start; gap: 10px;
+    font-size: 13px; color: #94a3b8;
+  }
+  .keypoints li::before {
+    content: '→'; color: var(--accent); font-weight: 700;
+    font-family: 'JetBrains Mono', monospace; flex-shrink: 0; margin-top: 1px;
+  }
+
+  /* Complexity badge */
+  .complexity-row {
+    display: flex; gap: 12px; flex-wrap: wrap; margin-top: 16px;
+    padding-top: 16px; border-top: 1px solid var(--border);
+  }
+  .complexity-pill {
+    display: flex; align-items: center; gap: 8px;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600;
+    padding: 6px 14px; border-radius: 8px; background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+  }
+  .complexity-pill .label { color: var(--muted); font-weight: 400; }
+  .complexity-pill .value { color: var(--accent3); }
+
+  /* Output block */
+  .output-block {
+    background: rgba(16,185,129,0.05); border: 1px solid rgba(16,185,129,0.2);
+    border-radius: 8px; padding: 12px 16px; margin-top: 10px;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--accent3);
+  }
+  .output-label { color: var(--muted); font-size: 10px; font-weight: 700; letter-spacing: 1px; margin-bottom: 6px; text-transform: uppercase; }
+
+  /* Footer */
+  footer { text-align: center; margin-top: 48px; color: var(--muted); font-size: 13px; font-family: 'JetBrains Mono', monospace; }
+
+  @media (max-width: 600px) {
+    .q-header { padding: 20px; }
+    .q-body { padding: 20px; }
+    .toc { padding: 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <header>
+    <div class="badge">Java Interview Prep</div>
+    <h1>Top 10 Coding Questions</h1>
+    <p>Essential patterns — Arrays, Streams, Collections, Strings, and more. Interview-ready with full solutions.</p>
+    <div class="tags">
+      <span class="tag blue">Arrays</span>
+      <span class="tag green">Streams API</span>
+      <span class="tag purple">Collections</span>
+      <span class="tag amber">Strings</span>
+      <span class="tag blue">HashMap</span>
+      <span class="tag green">Two Pointers</span>
+      <span class="tag purple">Recursion</span>
+      <span class="tag amber">Sorting</span>
+    </div>
+  </header>
+
+  <!-- TOC -->
+  <div class="toc">
+    <h2>// index</h2>
+    <div class="toc-grid">
+      <a href="#q1" class="toc-item"><span class="toc-num">01</span> Two Sum (Array + HashMap)</a>
+      <a href="#q2" class="toc-item"><span class="toc-num">02</span> Reverse a String</a>
+      <a href="#q3" class="toc-item"><span class="toc-num">03</span> Find Duplicates with Streams</a>
+      <a href="#q4" class="toc-item"><span class="toc-num">04</span> Anagram Check</a>
+      <a href="#q5" class="toc-item"><span class="toc-num">05</span> Fibonacci (Iterative + Stream)</a>
+      <a href="#q6" class="toc-item"><span class="toc-num">06</span> Group Words by Anagram</a>
+      <a href="#q7" class="toc-item"><span class="toc-num">07</span> Max Subarray (Kadane's)</a>
+      <a href="#q8" class="toc-item"><span class="toc-num">08</span> Word Frequency using Streams</a>
+      <a href="#q9" class="toc-item"><span class="toc-num">09</span> Merge Two Sorted Arrays</a>
+      <a href="#q10" class="toc-item"><span class="toc-num">10</span> Top K Frequent Elements</a>
+    </div>
+  </div>
+
+  <!-- Q1 -->
+  <div class="q-card" id="q1">
+    <div class="q-header">
+      <span class="q-num">Q 01</span>
+      <div class="q-title-block">
+        <div class="q-title">Two Sum — Find pair that adds to target</div>
+        <div class="q-meta">
+          <span class="q-chip chip-diff-easy">Easy</span>
+          <span class="q-chip chip-topic">Arrays</span>
+          <span class="q-chip chip-topic">HashMap</span>
+        </div>
+      </div>
+    </div>
+    <div class="q-body">
+      <div class="section-label">// problem</div>
+      <p class="explanation">Given an integer array <code style="color:var(--accent);background:rgba(0,212,255,0.08);padding:2px 6px;border-radius:4px">nums</code> and a <code style="color:var(--accent);background:rgba(0,212,255,0.08);padding:2px 6px;border-radius:4px">target</code>, return indices of two numbers that add up to the target. Assume exactly one solution exists. Naive O(n²) is not acceptable — use O(n) with HashMap.</p>
+
+      <div class="section-label">// solution</div>
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+          <span class="code-lang">Java</span>
+        </div>
+        <pre><code><span class="kw">import</span> java.util.*;
+
+<span class="kw">public class</span> <span class="ty">TwoSum</span> {
+
+    <span class="cm">// O(n) time — single pass HashMap</span>
+    <span class="kw">public static int</span>[] <span class="nm">twoSum</span>(<span class="ty">int</span>[] nums, <span class="ty">int</span> target) {
+        <span class="ty">Map</span>&lt;<span class="ty">Integer</span>, <span class="ty">Integer</span>&gt; map = <span class="kw">new</span> <span class="ty">HashMap</span>&lt;&gt;();
+        <span class="cm">// map stores: complement → index</span>
+
+        <span class="kw">for</span> (<span class="ty">int</span> i = <span class="nu">0</span>; i &lt; nums.length; i++) {
+            <span class="ty">int</span> complement = target - nums[i];
+
+            <span class="kw">if</span> (map.<span class="nm">containsKey</span>(complement)) {
+                <span class="cm">// complement seen before → answer found</span>
+                <span class="kw">return new int</span>[] { map.<span class="nm">get</span>(complement), i };
+            }
+            <span class="cm">// store current number's index for future lookups</span>
+            map.<span class="nm">put</span>(nums[i], i);
+        }
+        <span class="kw">throw new</span> <span class="ty">IllegalArgumentException</span>(<span class="st">"No solution"</span>);
+    }
+
+    <span class="kw">public static void</span> <span class="nm">main</span>(<span class="ty">String</span>[] args) {
+        <span class="ty">int</span>[] result = <span class="nm">twoSum</span>(<span class="kw">new int</span>[] {<span class="nu">2</span>, <span class="nu">7</span>, <span class="nu">11</span>, <span class="nu">15</span>}, <span class="nu">9</span>);
+        <span class="ty">System</span>.out.<span class="nm">println</span>(<span class="ty">Arrays</span>.<span class="nm">toString</span>(result)); <span class="cm">// [0, 1]</span>
+    }
+}</code></pre>
+      </div>
+
+      <div class="output-block"><div class="output-label">Output</div>[0, 1]  → nums[0] + nums[1] = 2 + 7 = 9 ✓</div>
+
+      <div class="keypoints">
+        <div class="section-label">// key insight</div>
+        <ul>
+          <li>For each element, check if its <strong>complement</strong> (target - current) already exists in the map.</li>
+          <li>Store value→index mapping so lookup is O(1) per element.</li>
+          <li>Single traversal = O(n) time, O(n) space — far better than nested loops.</li>
+          <li>Interview follow-up: handle duplicates (e.g., [3,3] → target 6)? Yes — works because we check map BEFORE inserting.</li>
+        </ul>
+      </div>
+      <div class="complexity-row">
+        <div class="complexity-pill"><span class="label">Time</span> <span class="value">O(n)</span></div>
+        <div class="complexity-pill"><span class="label">Space</span> <span class="value">O(n)</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="q-card" id="q2">
+    <div class="q-header">
+      <span class="q-num green">Q 02</span>
+      <div class="q-title-block">
+        <div class="q-title">Reverse a String — Multiple approaches</div>
+        <div class="q-meta">
+          <span class="q-chip chip-diff-easy">Easy</span>
+          <span class="q-chip chip-topic">Strings</span>
+          <span class="q-chip chip-topic">Two Pointers</span>
+          <span class="q-chip chip-topic">Streams</span>
+        </div>
+      </div>
+    </div>
+    <div class="q-body">
+      <div class="section-label">// problem</div>
+      <p class="explanation">Reverse a string. Must know at least 3 approaches: StringBuilder, char array with two-pointer swap, and Java Streams. This tests breadth of Java API knowledge.</p>
+
+      <div class="section-label">// solution — 3 approaches</div>
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+          <span class="code-lang">Java</span>
+        </div>
+        <pre><code><span class="kw">import</span> java.util.stream.*;
+
+<span class="kw">public class</span> <span class="ty">ReverseString</span> {
+
+    <span class="cm">// Approach 1: StringBuilder.reverse() — simplest, O(n)</span>
+    <span class="kw">public static</span> <span class="ty">String</span> <span class="nm">reverseV1</span>(<span class="ty">String</span> s) {
+        <span class="kw">return new</span> <span class="ty">StringBuilder</span>(s).<span class="nm">reverse</span>().<span class="nm">toString</span>();
+    }
+
+    <span class="cm">// Approach 2: Two-pointer char swap — in-place style</span>
+    <span class="kw">public static</span> <span class="ty">String</span> <span class="nm">reverseV2</span>(<span class="ty">String</span> s) {
+        <span class="ty">char</span>[] chars = s.<span class="nm">toCharArray</span>();
+        <span class="ty">int</span> left = <span class="nu">0</span>, right = chars.length - <span class="nu">1</span>;
+
+        <span class="kw">while</span> (left &lt; right) {
+            <span class="ty">char</span> temp = chars[left];
+            chars[left++] = chars[right];
+            chars[right--] = temp;
+        }
+        <span class="kw">return new</span> <span class="ty">String</span>(chars);
+    }
+
+    <span class="cm">// Approach 3: Java Streams (IntStream of chars)</span>
+    <span class="kw">public static</span> <span class="ty">String</span> <span class="nm">reverseV3</span>(<span class="ty">String</span> s) {
+        <span class="kw">return</span> s.<span class="nm">chars</span>()                  <span class="cm">// IntStream of char codes</span>
+                 .<span class="nm">mapToObj</span>(c -> <span class="ty">String</span>.<span class="nm">valueOf</span>((<span class="ty">char</span>) c))
+                 .<span class="nm">collect</span>(<span class="ty">Collectors</span>.<span class="nm">joining</span>())
+                 .<span class="nm">chars</span>()
+                 .<span class="nm">collect</span>(
+                     <span class="ty">StringBuilder</span>::new,
+                     (<span class="ty">StringBuilder</span> sb, <span class="ty">int</span> c) -> sb.<span class="nm">insert</span>(<span class="nu">0</span>, (<span class="ty">char</span>) c),
+                     <span class="ty">StringBuilder</span>::append
+                 ).<span class="nm">toString</span>();
+    }
+
+    <span class="cm">// Cleaner Stream reverse with reduce</span>
+    <span class="kw">public static</span> <span class="ty">String</span> <span class="nm">reverseV4</span>(<span class="ty">String</span> s) {
+        <span class="kw">return</span> <span class="ty">IntStream</span>.<span class="nm">range</span>(<span class="nu">0</span>, s.<span class="nm">length</span>())
+                        .<span class="nm">mapToObj</span>(i -> <span class="ty">String</span>.<span class="nm">valueOf</span>(s.<span class="nm">charAt</span>(s.<span class="nm">length</span>() - <span class="nu">1</span> - i)))
+                        .<span class="nm">collect</span>(<span class="ty">Collectors</span>.<span class="nm">joining</span>());
+    }
+}</code></pre>
+      </div>
+
+      <div class="keypoints">
+        <div class="section-label">// key insight</div>
+        <ul>
+          <li><strong>StringBuilder.reverse()</strong> — go-to answer; handles surrogate pairs for Unicode.</li>
+          <li><strong>Two-pointer</strong> — shows algorithm thinking; O(n/2) swaps.</li>
+          <li><strong>Stream reverseV4</strong> — clean, functional; iterates indices in reverse order using <code style="color:var(--accent)">IntStream.range</code>.</li>
+          <li>Strings are <em>immutable</em> in Java — all approaches work on a copy (char[] or new String).</li>
+        </ul>
+      </div>
+      <div class="complexity-row">
+        <div class="complexity-pill"><span class="label">Time</span> <span class="value">O(n)</span></div>
+        <div class="complexity-pill"><span class="label">Space</span> <span class="value">O(n)</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="q-card" id="q3">
+    <div class="q-header">
+      <span class="q-num purple">Q 03</span>
+      <div class="q-title-block">
+        <div class="q-title">Find Duplicates in Array — Classic + Streams</div>
+        <div class="q-meta">
+          <span class="q-chip chip-diff-easy">Easy</span>
+          <span class="q-chip chip-topic">Streams</span>
+          <span class="q-chip chip-topic">Arrays</span>
+          <span class="q-chip chip-topic">Set</span>
+        </div>
+      </div>
+    </div>
+    <div class="q-body">
+      <div class="section-label">// problem</div>
+      <p class="explanation">Find all duplicate elements in an integer array. This is a frequent warm-up question testing knowledge of Set, groupingBy, and Stream filtering.</p>
+
+      <div class="section-label">// solution</div>
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+          <span class="code-lang">Java</span>
+        </div>
+        <pre><code><span class="kw">import</span> java.util.*;
+<span class="kw">import</span> java.util.stream.*;
+
+<span class="kw">public class</span> <span class="ty">FindDuplicates</span> {
+
+    <span class="cm">// Approach 1: HashSet — track seen elements</span>
+    <span class="kw">public static</span> <span class="ty">List</span>&lt;<span class="ty">Integer</span>&gt; <span class="nm">findDuplicatesSet</span>(<span class="ty">int</span>[] arr) {
+        <span class="ty">Set</span>&lt;<span class="ty">Integer</span>&gt; seen = <span class="kw">new</span> <span class="ty">HashSet</span>&lt;&gt;();
+        <span class="ty">Set</span>&lt;<span class="ty">Integer</span>&gt; duplicates = <span class="kw">new</span> <span class="ty">LinkedHashSet</span>&lt;&gt;();
+
+        <span class="kw">for</span> (<span class="ty">int</span> num : arr) {
+            <span class="kw">if</span> (!seen.<span class="nm">add</span>(num)) {   <span class="cm">// add() returns false if already present</span>
+                duplicates.<span class="nm">add</span>(num);
+            }
+        }
+        <span class="kw">return new</span> <span class="ty">ArrayList</span>&lt;&gt;(duplicates);
+    }
+
+    <span class="cm">// Approach 2: Streams — group by count, filter freq > 1</span>
+    <span class="kw">public static</span> <span class="ty">List</span>&lt;<span class="ty">Integer</span>&gt; <span class="nm">findDuplicatesStream</span>(<span class="ty">int</span>[] arr) {
+        <span class="kw">return</span> <span class="ty">Arrays</span>.<span class="nm">stream</span>(arr)
+            .<span class="nm">boxed</span>()                                   <span class="cm">// int → Integer</span>
+            .<span class="nm">collect</span>(<span class="ty">Collectors</span>.<span class="nm">groupingBy</span>(          <span class="cm">// Map&lt;Integer, List&gt;</span>
+                i -> i, <span class="ty">Collectors</span>.<span class="nm">counting</span>()         <span class="cm">// count occurrences</span>
+            ))
+            .<span class="nm">entrySet</span>().<span class="nm">stream</span>()
+            .<span class="nm">filter</span>(e -> e.<span class="nm">getValue</span>() &gt; <span class="nu">1</span>)            <span class="cm">// keep freq > 1</span>
+            .<span class="nm">map</span>(<span class="ty">Map</span>.Entry::getKey)
+            .<span class="nm">collect</span>(<span class="ty">Collectors</span>.<span class="nm">toList</span>());
+    }
+
+    <span class="kw">public static void</span> <span class="nm">main</span>(<span class="ty">String</span>[] args) {
+        <span class="ty">int</span>[] arr = {<span class="nu">1</span>, <span class="nu">2</span>, <span class="nu">3</span>, <span class="nu">2</span>, <span class="nu">4</span>, <span class="nu">3</span>, <span class="nu">5</span>};
+        <span class="ty">System</span>.out.<span class="nm">println</span>(<span class="nm">findDuplicatesSet</span>(arr));    <span class="cm">// [2, 3]</span>
+        <span class="ty">System</span>.out.<span class="nm">println</span>(<span class="nm">findDuplicatesStream</span>(arr)); <span class="cm">// [2, 3]</span>
+    }
+}</code></pre>
+      </div>
+
+      <div class="output-block"><div class="output-label">Output</div>[2, 3]</div>
+
+      <div class="keypoints">
+        <div class="section-label">// key insight</div>
+        <ul>
+          <li><code style="color:var(--accent)">Set.add()</code> returns <code>false</code> when element already exists — elegant duplicate detection.</li>
+          <li><code style="color:var(--accent)">Collectors.groupingBy + counting()</code> builds a frequency map in one pipeline.</li>
+          <li><code style="color:var(--accent)">.boxed()</code> converts primitive IntStream → Stream&lt;Integer&gt; needed for collectors.</li>
+          <li>LinkedHashSet preserves insertion order of duplicates.</li>
+        </ul>
+      </div>
+      <div class="complexity-row">
+        <div class="complexity-pill"><span class="label">Time</span> <span class="value">O(n)</span></div>
+        <div class="complexity-pill"><span class="label">Space</span> <span class="value">O(n)</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q4 -->
+  <div class="q-card" id="q4">
+    <div class="q-header">
+      <span class="q-num amber">Q 04</span>
+      <div class="q-title-block">
+        <div class="q-title">Anagram Check — Two strings</div>
+        <div class="q-meta">
+          <span class="q-chip chip-diff-easy">Easy</span>
+          <span class="q-chip chip-topic">Strings</span>
+          <span class="q-chip chip-topic">Sorting</span>
+          <span class="q-chip chip-topic">Frequency Map</span>
+        </div>
+      </div>
+    </div>
+    <div class="q-body">
+      <div class="section-label">// problem</div>
+      <p class="explanation">Determine if two strings are anagrams of each other. Classic string manipulation — tests sorting, char frequency arrays, and HashMap usage.</p>
+
+      <div class="section-label">// solution — 2 approaches</div>
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+          <span class="code-lang">Java</span>
+        </div>
+        <pre><code><span class="kw">import</span> java.util.*;
+
+<span class="kw">public class</span> <span class="ty">AnagramCheck</span> {
+
+    <span class="cm">// Approach 1: Sort both strings and compare — simple</span>
+    <span class="kw">public static boolean</span> <span class="nm">isAnagramSort</span>(<span class="ty">String</span> s, <span class="ty">String</span> t) {
+        <span class="kw">if</span> (s.<span class="nm">length</span>() != t.<span class="nm">length</span>()) <span class="kw">return false</span>;
+
+        <span class="ty">char</span>[] a = s.<span class="nm">toCharArray</span>(); <span class="ty">Arrays</span>.<span class="nm">sort</span>(a);
+        <span class="ty">char</span>[] b = t.<span class="nm">toCharArray</span>(); <span class="ty">Arrays</span>.<span class="nm">sort</span>(b);
+        <span class="kw">return</span> <span class="ty">Arrays</span>.<span class="nm">equals</span>(a, b);
+    }
+
+    <span class="cm">// Approach 2: Frequency array — O(n), optimal for lowercase ASCII</span>
+    <span class="kw">public static boolean</span> <span class="nm">isAnagramFreq</span>(<span class="ty">String</span> s, <span class="ty">String</span> t) {
+        <span class="kw">if</span> (s.<span class="nm">length</span>() != t.<span class="nm">length</span>()) <span class="kw">return false</span>;
+
+        <span class="ty">int</span>[] freq = <span class="kw">new int</span>[<span class="nu">26</span>];  <span class="cm">// index = char - 'a'</span>
+
+        <span class="kw">for</span> (<span class="ty">int</span> i = <span class="nu">0</span>; i &lt; s.<span class="nm">length</span>(); i++) {
+            freq[s.<span class="nm">charAt</span>(i) - <span class="st">'a'</span>]++;  <span class="cm">// increment for s</span>
+            freq[t.<span class="nm">charAt</span>(i) - <span class="st">'a'</span>]--;  <span class="cm">// decrement for t</span>
+        }
+
+        <span class="kw">for</span> (<span class="ty">int</span> count : freq) {
+            <span class="kw">if</span> (count != <span class="nu">0</span>) <span class="kw">return false</span>; <span class="cm">// non-zero = mismatch</span>
+        }
+        <span class="kw">return true</span>;
+    }
+
+    <span class="kw">public static void</span> <span class="nm">main</span>(<span class="ty">String</span>[] args) {
+        <span class="ty">System</span>.out.<span class="nm">println</span>(<span class="nm">isAnagramFreq</span>(<span class="st">"anagram"</span>, <span class="st">"nagaram"</span>)); <span class="cm">// true</span>
+        <span class="ty">System</span>.out.<span class="nm">println</span>(<span class="nm">isAnagramFreq</span>(<span class="st">"rat"</span>, <span class="st">"car"</span>));          <span class="cm">// false</span>
+    }
+}</code></pre>
+      </div>
+
+      <div class="keypoints">
+        <div class="section-label">// key insight</div>
+        <ul>
+          <li>Early exit if lengths differ — anagrams must have same length.</li>
+          <li><strong>Frequency array trick</strong>: increment for s, decrement for t simultaneously. Final array must be all zeros.</li>
+          <li>Sort approach: O(n log n) but very readable. Freq array: O(n) — preferred in interviews.</li>
+          <li>For Unicode/general chars, use <code style="color:var(--accent)">HashMap&lt;Character, Integer&gt;</code> instead of fixed int[26].</li>
+        </ul>
+      </div>
+      <div class="complexity-row">
+        <div class="complexity-pill"><span class="label">Freq Array Time</span> <span class="value">O(n)</span></div>
+        <div class="complexity-pill"><span class="label">Sort Time</span> <span class="value">O(n log n)</span></div>
+        <div class="complexity-pill"><span class="label">Space</span> <span class="value">O(1)</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q5 -->
+  <div class="q-card" id="q5">
+    <div class="q-header">
+      <span class="q-num">Q 05</span>
+      <div class="q-title-block">
+        <div class="q-title">Fibonacci — Iterative, Recursive & Stream</div>
+        <div class="q-meta">
+          <span class="q-chip chip-diff-easy">Easy</span>
+          <span class="q-chip chip-topic">Recursion</span>
+          <span class="q-chip chip-topic">Streams</span>
+          <span class="q-chip chip-topic">Memoization</span>
+        </div>
+      </div>
+    </div>
+    <div class="q-body">
+      <div class="section-label">// problem</div>
+      <p class="explanation">Generate Fibonacci numbers. Tests understanding of recursion vs iteration tradeoffs, and Java 8 Stream's infinite sequence generation with <code style="color:var(--accent)">Stream.iterate()</code>.</p>
+
+      <div class="section-label">// solution</div>
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+          <span class="code-lang">Java</span>
+        </div>
+        <pre><code><span class="kw">import</span> java.util.*;
+<span class="kw">import</span> java.util.stream.*;
+
+<span class="kw">public class</span> <span class="ty">Fibonacci</span> {
+
+    <span class="cm">// 1. Iterative — O(n) time, O(1) space — BEST for interviews</span>
+    <span class="kw">public static long</span> <span class="nm">fibIterative</span>(<span class="ty">int</span> n) {
+        <span class="kw">if</span> (n &lt;= <span class="nu">1</span>) <span class="kw">return</span> n;
+        <span class="ty">long</span> a = <span class="nu">0</span>, b = <span class="nu">1</span>;
+        <span class="kw">for</span> (<span class="ty">int</span> i = <span class="nu">2</span>; i &lt;= n; i++) {
+            <span class="ty">long</span> temp = a + b;
+            a = b; b = temp;
+        }
+        <span class="kw">return</span> b;
+    }
+
+    <span class="cm">// 2. Recursive with memoization — O(n) time/space</span>
+    <span class="kw">private static</span> <span class="ty">Map</span>&lt;<span class="ty">Integer</span>, <span class="ty">Long</span>&gt; memo = <span class="kw">new</span> <span class="ty">HashMap</span>&lt;&gt;();
+
+    <span class="kw">public static long</span> <span class="nm">fibMemo</span>(<span class="ty">int</span> n) {
+        <span class="kw">if</span> (n &lt;= <span class="nu">1</span>) <span class="kw">return</span> n;
+        <span class="kw">if</span> (memo.<span class="nm">containsKey</span>(n)) <span class="kw">return</span> memo.<span class="nm">get</span>(n);
+        <span class="ty">long</span> result = <span class="nm">fibMemo</span>(n - <span class="nu">1</span>) + <span class="nm">fibMemo</span>(n - <span class="nu">2</span>);
+        memo.<span class="nm">put</span>(n, result);
+        <span class="kw">return</span> result;
+    }
+
+    <span class="cm">// 3. Java 8 Stream.iterate — infinite stream, take N</span>
+    <span class="kw">public static</span> <span class="ty">List</span>&lt;<span class="ty">Long</span>&gt; <span class="nm">fibStream</span>(<span class="ty">int</span> n) {
+        <span class="kw">return</span> <span class="ty">Stream</span>.<span class="nm">iterate</span>(
+                    <span class="kw">new long</span>[] {<span class="nu">0</span>, <span class="nu">1</span>},       <span class="cm">// seed: [a, b]</span>
+                    f -> <span class="kw">new long</span>[] {f[<span class="nu">1</span>], f[<span class="nu">0</span>] + f[<span class="nu">1</span>]} <span class="cm">// next: [b, a+b]</span>
+               )
+               .<span class="nm">limit</span>(n)
+               .<span class="nm">map</span>(f -> f[<span class="nu">0</span>])
+               .<span class="nm">collect</span>(<span class="ty">Collectors</span>.<span class="nm">toList</span>());
+    }
+
+    <span class="kw">public static void</span> <span class="nm">main</span>(<span class="ty">String</span>[] args) {
+        <span class="ty">System</span>.out.<span class="nm">println</span>(<span class="nm">fibIterative</span>(<span class="nu">10</span>)); <span class="cm">// 55</span>
+        <span class="ty">System</span>.out.<span class="nm">println</span>(<span class="nm">fibStream</span>(<span class="nu">10</span>));    <span class="cm">// [0,1,1,2,3,5,8,13,21,34]</span>
+    }
+}</code></pre>
+      </div>
+
+      <div class="keypoints">
+        <div class="section-label">// key insight</div>
+        <ul>
+          <li><strong>Naive recursion</strong> is O(2ⁿ) — exponential. Always mention this is unacceptable.</li>
+          <li><strong>Memoization</strong> converts it to O(n) by caching results (top-down DP).</li>
+          <li><code style="color:var(--accent)">Stream.iterate(seed, f)</code> generates infinite streams lazily — <code>.limit(n)</code> stops evaluation. Classic Java 8 interview pattern.</li>
+          <li>The pair array trick <code>[a,b] → [b, a+b]</code> elegantly carries state through stream iterations.</li>
+        </ul>
+      </div>
+      <div class="complexity-row">
+        <div class="complexity-pill"><span class="label">Iterative Time</span> <span class="value">O(n)</span></div>
+        <div class="complexity-pill"><span class="label">Recursive (naive)</span> <span class="value">O(2ⁿ)</span></div>
+        <div class="complexity-pill"><span class="label">Memo Space</span> <span class="value">O(n)</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q6 -->
+  <div class="q-card" id="q6">
+    <div class="q-header">
+      <span class="q-num green">Q 06</span>
+      <div class="q-title-block">
+        <div class="q-title">Group Anagrams — Collectors.groupingBy</div>
+        <div class="q-meta">
+          <span class="q-chip chip-diff-medium">Medium</span>
+          <span class="q-chip chip-topic">Streams</span>
+          <span class="q-chip chip-topic">HashMap</span>
+          <span class="q-chip chip-topic">Sorting</span>
+        </div>
+      </div>
+    </div>
+    <div class="q-body">
+      <div class="section-label">// problem</div>
+      <p class="explanation">Given a list of strings, group all anagrams together. This is a premium Streams + groupingBy question that tests advanced collector usage.</p>
+
+      <div class="section-label">// solution</div>
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+          <span class="code-lang">Java</span>
+        </div>
+        <pre><code><span class="kw">import</span> java.util.*;
+<span class="kw">import</span> java.util.stream.*;
+
+<span class="kw">public class</span> <span class="ty">GroupAnagrams</span> {
+
+    <span class="cm">// Classic HashMap approach — sorted chars as key</span>
+    <span class="kw">public static</span> <span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="ty">List</span>&lt;<span class="ty">String</span>&gt;&gt; <span class="nm">groupAnagrams</span>(<span class="ty">String</span>[] words) {
+        <span class="kw">return</span> <span class="ty">Arrays</span>.<span class="nm">stream</span>(words)
+            .<span class="nm">collect</span>(<span class="ty">Collectors</span>.<span class="nm">groupingBy</span>(word -> {
+                <span class="ty">char</span>[] chars = word.<span class="nm">toCharArray</span>();
+                <span class="ty">Arrays</span>.<span class="nm">sort</span>(chars);
+                <span class="kw">return new</span> <span class="ty">String</span>(chars);  <span class="cm">// sorted string = canonical key</span>
+            }));
+    }
+
+    <span class="cm">// Alternative: explicit HashMap (same logic, more verbose)</span>
+    <span class="kw">public static</span> <span class="ty">List</span>&lt;<span class="ty">List</span>&lt;<span class="ty">String</span>&gt;&gt; <span class="nm">groupAnagramsList</span>(<span class="ty">String</span>[] words) {
+        <span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="ty">List</span>&lt;<span class="ty">String</span>&gt;&gt; map = <span class="kw">new</span> <span class="ty">HashMap</span>&lt;&gt;();
+
+        <span class="kw">for</span> (<span class="ty">String</span> word : words) {
+            <span class="ty">char</span>[] c = word.<span class="nm">toCharArray</span>();
+            <span class="ty">Arrays</span>.<span class="nm">sort</span>(c);
+            <span class="ty">String</span> key = <span class="kw">new</span> <span class="ty">String</span>(c);
+            map.<span class="nm">computeIfAbsent</span>(key, k -> <span class="kw">new</span> <span class="ty">ArrayList</span>&lt;&gt;()).<span class="nm">add</span>(word);
+        }
+        <span class="kw">return new</span> <span class="ty">ArrayList</span>&lt;&gt;(map.<span class="nm">values</span>());
+    }
+
+    <span class="kw">public static void</span> <span class="nm">main</span>(<span class="ty">String</span>[] args) {
+        <span class="ty">String</span>[] input = {<span class="st">"eat"</span>, <span class="st">"tea"</span>, <span class="st">"tan"</span>, <span class="st">"ate"</span>, <span class="st">"nat"</span>, <span class="st">"bat"</span>};
+        <span class="ty">System</span>.out.<span class="nm">println</span>(<span class="nm">groupAnagrams</span>(input));
+        <span class="cm">// {aet=[eat, tea, ate], ant=[tan, nat], abt=[bat]}</span>
+    }
+}</code></pre>
+      </div>
+
+      <div class="output-block"><div class="output-label">Output</div>{aet=[eat, tea, ate], ant=[tan, nat], abt=[bat]}</div>
+
+      <div class="keypoints">
+        <div class="section-label">// key insight</div>
+        <ul>
+          <li>Sort each word's chars → gives a <strong>canonical key</strong>. Anagrams produce the same sorted key.</li>
+          <li><code style="color:var(--accent)">Collectors.groupingBy(keyExtractor)</code> auto-groups into Map&lt;Key, List&lt;T&gt;&gt; — one liner!</li>
+          <li><code style="color:var(--accent)">computeIfAbsent(key, k → new ArrayList&lt;&gt;())</code> is the idiomatic way to build list-map without null checks.</li>
+          <li>Time: O(n * k log k) where k = max word length (sorting each word).</li>
+        </ul>
+      </div>
+      <div class="complexity-row">
+        <div class="complexity-pill"><span class="label">Time</span> <span class="value">O(n·k log k)</span></div>
+        <div class="complexity-pill"><span class="label">Space</span> <span class="value">O(n·k)</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q7 -->
+  <div class="q-card" id="q7">
+    <div class="q-header">
+      <span class="q-num purple">Q 07</span>
+      <div class="q-title-block">
+        <div class="q-title">Maximum Subarray — Kadane's Algorithm</div>
+        <div class="q-meta">
+          <span class="q-chip chip-diff-medium">Medium</span>
+          <span class="q-chip chip-topic">Arrays</span>
+          <span class="q-chip chip-topic">Dynamic Programming</span>
+          <span class="q-chip chip-topic">Kadane's</span>
+        </div>
+      </div>
+    </div>
+    <div class="q-body">
+      <div class="section-label">// problem</div>
+      <p class="explanation">Find the contiguous subarray with the largest sum. One of the most important DP-adjacent array algorithms. Every Java developer must know Kadane's Algorithm cold.</p>
+
+      <div class="section-label">// solution</div>
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+          <span class="code-lang">Java</span>
+        </div>
+        <pre><code><span class="kw">public class</span> <span class="ty">MaxSubarray</span> {
+
+    <span class="cm">// Kadane's Algorithm — O(n) time, O(1) space</span>
+    <span class="kw">public static int</span> <span class="nm">maxSubArray</span>(<span class="ty">int</span>[] nums) {
+        <span class="ty">int</span> maxSum = nums[<span class="nu">0</span>];    <span class="cm">// global max — init to first element</span>
+        <span class="ty">int</span> curSum = nums[<span class="nu">0</span>];    <span class="cm">// current running sum</span>
+
+        <span class="kw">for</span> (<span class="ty">int</span> i = <span class="nu">1</span>; i &lt; nums.length; i++) {
+            <span class="cm">// Decision: extend current subarray OR start fresh from nums[i]</span>
+            curSum = <span class="ty">Math</span>.<span class="nm">max</span>(nums[i], curSum + nums[i]);
+            maxSum = <span class="ty">Math</span>.<span class="nm">max</span>(maxSum, curSum);
+        }
+        <span class="kw">return</span> maxSum;
+    }
+
+    <span class="cm">// Extended: also return the subarray indices</span>
+    <span class="kw">public static int</span>[] <span class="nm">maxSubArrayWithIndices</span>(<span class="ty">int</span>[] nums) {
+        <span class="ty">int</span> maxSum = nums[<span class="nu">0</span>], curSum = nums[<span class="nu">0</span>];
+        <span class="ty">int</span> start = <span class="nu">0</span>, end = <span class="nu">0</span>, tempStart = <span class="nu">0</span>;
+
+        <span class="kw">for</span> (<span class="ty">int</span> i = <span class="nu">1</span>; i &lt; nums.length; i++) {
+            <span class="kw">if</span> (nums[i] &gt; curSum + nums[i]) {
+                curSum = nums[i];
+                tempStart = i;   <span class="cm">// potential new start</span>
+            } <span class="kw">else</span> {
+                curSum += nums[i];
+            }
+            <span class="kw">if</span> (curSum &gt; maxSum) {
+                maxSum = curSum;
+                start = tempStart;
+                end = i;
+            }
+        }
+        <span class="kw">return new int</span>[] {maxSum, start, end};
+    }
+
+    <span class="kw">public static void</span> <span class="nm">main</span>(<span class="ty">String</span>[] args) {
+        <span class="ty">int</span>[] nums = {<span class="nu">-2</span>, <span class="nu">1</span>, <span class="nu">-3</span>, <span class="nu">4</span>, <span class="nu">-1</span>, <span class="nu">2</span>, <span class="nu">1</span>, <span class="nu">-5</span>, <span class="nu">4</span>};
+        <span class="ty">System</span>.out.<span class="nm">println</span>(<span class="nm">maxSubArray</span>(nums)); <span class="cm">// 6  ([4,-1,2,1])</span>
+
+        <span class="ty">int</span>[] res = <span class="nm">maxSubArrayWithIndices</span>(nums);
+        <span class="ty">System</span>.out.<span class="nm">printf</span>(<span class="st">"sum=%d, [%d..%d]%n"</span>, res[<span class="nu">0</span>], res[<span class="nu">1</span>], res[<span class="nu">2</span>]);
+    }
+}</code></pre>
+      </div>
+
+      <div class="output-block"><div class="output-label">Output</div>6
+sum=6, [3..6]  → subarray [4, -1, 2, 1]</div>
+
+      <div class="keypoints">
+        <div class="section-label">// key insight</div>
+        <ul>
+          <li>Key decision at each step: <em>extend current subarray</em> (curSum + nums[i]) or <em>start fresh</em> (nums[i]). Pick the larger.</li>
+          <li>Whenever adding a negative running sum is worse than starting over, reset — this is the heart of Kadane's.</li>
+          <li>Must handle all-negative arrays: initialize both maxSum and curSum to nums[0], not 0.</li>
+          <li>This is essentially O(n) DP where dp[i] = max subarray ending at index i.</li>
+        </ul>
+      </div>
+      <div class="complexity-row">
+        <div class="complexity-pill"><span class="label">Time</span> <span class="value">O(n)</span></div>
+        <div class="complexity-pill"><span class="label">Space</span> <span class="value">O(1)</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q8 -->
+  <div class="q-card" id="q8">
+    <div class="q-header">
+      <span class="q-num amber">Q 08</span>
+      <div class="q-title-block">
+        <div class="q-title">Word Frequency Count — Streams Pipeline</div>
+        <div class="q-meta">
+          <span class="q-chip chip-diff-medium">Medium</span>
+          <span class="q-chip chip-topic">Streams</span>
+          <span class="q-chip chip-topic">Collectors</span>
+          <span class="q-chip chip-topic">Sorting</span>
+        </div>
+      </div>
+    </div>
+    <div class="q-body">
+      <div class="section-label">// problem</div>
+      <p class="explanation">Count the frequency of each word in a sentence and sort by most frequent. This is the definitive Java 8 Streams interview question combining split, groupingBy, counting, sorted, and limit.</p>
+
+      <div class="section-label">// solution</div>
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+          <span class="code-lang">Java</span>
+        </div>
+        <pre><code><span class="kw">import</span> java.util.*;
+<span class="kw">import</span> java.util.stream.*;
+<span class="kw">import</span> java.util.function.*;
+
+<span class="kw">public class</span> <span class="ty">WordFrequency</span> {
+
+    <span class="kw">public static</span> <span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="ty">Long</span>&gt; <span class="nm">wordFrequency</span>(<span class="ty">String</span> sentence) {
+        <span class="kw">return</span> <span class="ty">Arrays</span>.<span class="nm">stream</span>(sentence.<span class="nm">toLowerCase</span>().<span class="nm">split</span>(<span class="st">"\\W+"</span>)) <span class="cm">// split on non-word chars</span>
+            .<span class="nm">filter</span>(w -> !w.<span class="nm">isEmpty</span>())
+            .<span class="nm">collect</span>(<span class="ty">Collectors</span>.<span class="nm">groupingBy</span>(
+                <span class="ty">Function</span>::identity,         <span class="cm">// key = word itself</span>
+                <span class="ty">Collectors</span>.<span class="nm">counting</span>()       <span class="cm">// value = count</span>
+            ));
+    }
+
+    <span class="cm">// Top N most frequent words</span>
+    <span class="kw">public static</span> <span class="ty">List</span>&lt;<span class="ty">Map</span>.<span class="ty">Entry</span>&lt;<span class="ty">String</span>, <span class="ty">Long</span>&gt;&gt; <span class="nm">topNWords</span>(<span class="ty">String</span> text, <span class="ty">int</span> n) {
+        <span class="kw">return</span> <span class="nm">wordFrequency</span>(text)
+            .<span class="nm">entrySet</span>().<span class="nm">stream</span>()
+            .<span class="nm">sorted</span>(<span class="ty">Map</span>.<span class="ty">Entry</span>.&lt;<span class="ty">String</span>, <span class="ty">Long</span>&gt;<span class="nm">comparingByValue</span>().<span class="nm">reversed</span>()) <span class="cm">// desc</span>
+            .<span class="nm">limit</span>(n)
+            .<span class="nm">collect</span>(<span class="ty">Collectors</span>.<span class="nm">toList</span>());
+    }
+
+    <span class="cm">// LinkedHashMap to preserve sorted insertion order</span>
+    <span class="kw">public static</span> <span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="ty">Long</span>&gt; <span class="nm">sortedFrequency</span>(<span class="ty">String</span> text) {
+        <span class="kw">return</span> <span class="nm">wordFrequency</span>(text)
+            .<span class="nm">entrySet</span>().<span class="nm">stream</span>()
+            .<span class="nm">sorted</span>(<span class="ty">Map</span>.<span class="ty">Entry</span>.&lt;<span class="ty">String</span>, <span class="ty">Long</span>&gt;<span class="nm">comparingByValue</span>().<span class="nm">reversed</span>())
+            .<span class="nm">collect</span>(<span class="ty">Collectors</span>.<span class="nm">toMap</span>(
+                <span class="ty">Map</span>.<span class="ty">Entry</span>::getKey,
+                <span class="ty">Map</span>.<span class="ty">Entry</span>::getValue,
+                (e1, e2) -> e1,
+                <span class="ty">LinkedHashMap</span>::new   <span class="cm">// preserve sorted order</span>
+            ));
+    }
+
+    <span class="kw">public static void</span> <span class="nm">main</span>(<span class="ty">String</span>[] args) {
+        <span class="ty">String</span> text = <span class="st">"java is great java streams are great java"</span>;
+        <span class="ty">System</span>.out.<span class="nm">println</span>(<span class="nm">sortedFrequency</span>(text));
+        <span class="cm">// {java=3, great=2, is=1, streams=1, are=1}</span>
+    }
+}</code></pre>
+      </div>
+
+      <div class="output-block"><div class="output-label">Output</div>{java=3, great=2, is=1, streams=1, are=1}</div>
+
+      <div class="keypoints">
+        <div class="section-label">// key insight</div>
+        <ul>
+          <li><code style="color:var(--accent)">Collectors.groupingBy(Function::identity, counting())</code> — one-shot frequency map pattern. Must know by heart.</li>
+          <li><code style="color:var(--accent)">Map.Entry.comparingByValue().reversed()</code> — descending sort on values. Classic stream sorting pattern.</li>
+          <li>Use <code style="color:var(--accent)">LinkedHashMap::new</code> as the merge-map supplier in <code>toMap()</code> to preserve insertion order after sorting.</li>
+          <li><code style="color:var(--accent)">"\\W+"</code> regex splits on any non-word character — handles punctuation, multiple spaces, etc.</li>
+        </ul>
+      </div>
+      <div class="complexity-row">
+        <div class="complexity-pill"><span class="label">Time</span> <span class="value">O(n log n)</span></div>
+        <div class="complexity-pill"><span class="label">Space</span> <span class="value">O(n)</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q9 -->
+  <div class="q-card" id="q9">
+    <div class="q-header">
+      <span class="q-num">Q 09</span>
+      <div class="q-title-block">
+        <div class="q-title">Merge Two Sorted Arrays — Two Pointers</div>
+        <div class="q-meta">
+          <span class="q-chip chip-diff-easy">Easy</span>
+          <span class="q-chip chip-topic">Arrays</span>
+          <span class="q-chip chip-topic">Two Pointers</span>
+          <span class="q-chip chip-topic">Streams</span>
+        </div>
+      </div>
+    </div>
+    <div class="q-body">
+      <div class="section-label">// problem</div>
+      <p class="explanation">Merge two sorted integer arrays into a single sorted array without using a sort function on the merged result. Tests the two-pointer technique fundamental to merge sort.</p>
+
+      <div class="section-label">// solution</div>
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+          <span class="code-lang">Java</span>
+        </div>
+        <pre><code><span class="kw">import</span> java.util.stream.*;
+<span class="kw">import</span> java.util.*;
+
+<span class="kw">public class</span> <span class="ty">MergeSortedArrays</span> {
+
+    <span class="cm">// Two-pointer merge — O(n+m) time, O(n+m) space</span>
+    <span class="kw">public static int</span>[] <span class="nm">merge</span>(<span class="ty">int</span>[] a, <span class="ty">int</span>[] b) {
+        <span class="ty">int</span>[] result = <span class="kw">new int</span>[a.length + b.length];
+        <span class="ty">int</span> i = <span class="nu">0</span>, j = <span class="nu">0</span>, k = <span class="nu">0</span>;
+
+        <span class="cm">// Phase 1: compare and pick smaller element</span>
+        <span class="kw">while</span> (i &lt; a.length &amp;&amp; j &lt; b.length) {
+            <span class="kw">if</span> (a[i] &lt;= b[j]) result[k++] = a[i++];
+            <span class="kw">else</span>               result[k++] = b[j++];
+        }
+
+        <span class="cm">// Phase 2: drain remaining elements (at most one runs)</span>
+        <span class="kw">while</span> (i &lt; a.length) result[k++] = a[i++];
+        <span class="kw">while</span> (j &lt; b.length) result[k++] = b[j++];
+
+        <span class="kw">return</span> result;
+    }
+
+    <span class="cm">// Stream-based merge (concise, but not O(n) — uses sort internally)</span>
+    <span class="kw">public static int</span>[] <span class="nm">mergeStream</span>(<span class="ty">int</span>[] a, <span class="ty">int</span>[] b) {
+        <span class="kw">return</span> <span class="ty">IntStream</span>.<span class="nm">concat</span>(
+                    <span class="ty">Arrays</span>.<span class="nm">stream</span>(a),
+                    <span class="ty">Arrays</span>.<span class="nm">stream</span>(b)
+               )
+               .<span class="nm">sorted</span>()
+               .<span class="nm">toArray</span>();
+    }
+
+    <span class="kw">public static void</span> <span class="nm">main</span>(<span class="ty">String</span>[] args) {
+        <span class="ty">int</span>[] a = {<span class="nu">1</span>, <span class="nu">3</span>, <span class="nu">5</span>, <span class="nu">7</span>};
+        <span class="ty">int</span>[] b = {<span class="nu">2</span>, <span class="nu">4</span>, <span class="nu">6</span>, <span class="nu">8</span>};
+        <span class="ty">System</span>.out.<span class="nm">println</span>(<span class="ty">Arrays</span>.<span class="nm">toString</span>(<span class="nm">merge</span>(a, b)));
+        <span class="cm">// [1, 2, 3, 4, 5, 6, 7, 8]</span>
+    }
+}</code></pre>
+      </div>
+
+      <div class="output-block"><div class="output-label">Output</div>[1, 2, 3, 4, 5, 6, 7, 8]</div>
+
+      <div class="keypoints">
+        <div class="section-label">// key insight</div>
+        <ul>
+          <li>Three pointers: <code>i</code> for array a, <code>j</code> for array b, <code>k</code> for result. Classic merge operation from Merge Sort.</li>
+          <li>After main loop, exactly one array may have leftover elements — two drain loops handle both cases.</li>
+          <li><code style="color:var(--accent)">IntStream.concat()</code> is the Stream equivalent — cleaner but O(n log n) due to sort.</li>
+          <li>LeetCode variant: merge b into a in-place (with enough space). Use reverse two-pointer from end.</li>
+        </ul>
+      </div>
+      <div class="complexity-row">
+        <div class="complexity-pill"><span class="label">Two-Pointer Time</span> <span class="value">O(n+m)</span></div>
+        <div class="complexity-pill"><span class="label">Stream Time</span> <span class="value">O(n log n)</span></div>
+        <div class="complexity-pill"><span class="label">Space</span> <span class="value">O(n+m)</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q10 -->
+  <div class="q-card" id="q10">
+    <div class="q-header">
+      <span class="q-num purple">Q 10</span>
+      <div class="q-title-block">
+        <div class="q-title">Top K Frequent Elements — PriorityQueue</div>
+        <div class="q-meta">
+          <span class="q-chip chip-diff-medium">Medium</span>
+          <span class="q-chip chip-topic">PriorityQueue</span>
+          <span class="q-chip chip-topic">Streams</span>
+          <span class="q-chip chip-topic">HashMap</span>
+        </div>
+      </div>
+    </div>
+    <div class="q-body">
+      <div class="section-label">// problem</div>
+      <p class="explanation">Given an integer array, return the k most frequent elements. This combines HashMap for frequency counting with PriorityQueue (min-heap) for efficient top-k extraction — a very common interview pattern.</p>
+
+      <div class="section-label">// solution</div>
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+          <span class="code-lang">Java</span>
+        </div>
+        <pre><code><span class="kw">import</span> java.util.*;
+<span class="kw">import</span> java.util.stream.*;
+
+<span class="kw">public class</span> <span class="ty">TopKFrequent</span> {
+
+    <span class="cm">// Approach 1: HashMap + Min-Heap (PriorityQueue)</span>
+    <span class="kw">public static</span> <span class="ty">List</span>&lt;<span class="ty">Integer</span>&gt; <span class="nm">topKFrequent</span>(<span class="ty">int</span>[] nums, <span class="ty">int</span> k) {
+        <span class="cm">// Step 1: Build frequency map</span>
+        <span class="ty">Map</span>&lt;<span class="ty">Integer</span>, <span class="ty">Integer</span>&gt; freq = <span class="kw">new</span> <span class="ty">HashMap</span>&lt;&gt;();
+        <span class="kw">for</span> (<span class="ty">int</span> num : nums) {
+            freq.<span class="nm">merge</span>(num, <span class="nu">1</span>, <span class="ty">Integer</span>::sum); <span class="cm">// elegant: merge(key, default, remapping)</span>
+        }
+
+        <span class="cm">// Step 2: Min-heap of size k — comparator on frequency</span>
+        <span class="ty">PriorityQueue</span>&lt;<span class="ty">Integer</span>&gt; heap = <span class="kw">new</span> <span class="ty">PriorityQueue</span>&lt;&gt;(
+            (<span class="ty">Integer</span> a, <span class="ty">Integer</span> b) -> freq.<span class="nm">get</span>(a) - freq.<span class="nm">get</span>(b)
+        );
+
+        <span class="kw">for</span> (<span class="ty">int</span> num : freq.<span class="nm">keySet</span>()) {
+            heap.<span class="nm">offer</span>(num);
+            <span class="kw">if</span> (heap.<span class="nm">size</span>() &gt; k) heap.<span class="nm">poll</span>(); <span class="cm">// evict least frequent</span>
+        }
+
+        <span class="kw">return new</span> <span class="ty">ArrayList</span>&lt;&gt;(heap); <span class="cm">// remaining k elements</span>
+    }
+
+    <span class="cm">// Approach 2: Streams — cleaner, great for interviews</span>
+    <span class="kw">public static</span> <span class="ty">List</span>&lt;<span class="ty">Integer</span>&gt; <span class="nm">topKFrequentStream</span>(<span class="ty">int</span>[] nums, <span class="ty">int</span> k) {
+        <span class="kw">return</span> <span class="ty">Arrays</span>.<span class="nm">stream</span>(nums)
+            .<span class="nm">boxed</span>()
+            .<span class="nm">collect</span>(<span class="ty">Collectors</span>.<span class="nm">groupingBy</span>(<span class="ty">Function</span>::identity, <span class="ty">Collectors</span>.<span class="nm">counting</span>()))
+            .<span class="nm">entrySet</span>().<span class="nm">stream</span>()
+            .<span class="nm">sorted</span>(<span class="ty">Map</span>.<span class="ty">Entry</span>.&lt;<span class="ty">Integer</span>, <span class="ty">Long</span>&gt;<span class="nm">comparingByValue</span>().<span class="nm">reversed</span>())
+            .<span class="nm">limit</span>(k)
+            .<span class="nm">map</span>(<span class="ty">Map</span>.<span class="ty">Entry</span>::getKey)
+            .<span class="nm">collect</span>(<span class="ty">Collectors</span>.<span class="nm">toList</span>());
+    }
+
+    <span class="kw">public static void</span> <span class="nm">main</span>(<span class="ty">String</span>[] args) {
+        <span class="ty">int</span>[] nums = {<span class="nu">1</span>, <span class="nu">1</span>, <span class="nu">1</span>, <span class="nu">2</span>, <span class="nu">2</span>, <span class="nu">3</span>};
+        <span class="ty">System</span>.out.<span class="nm">println</span>(<span class="nm">topKFrequent</span>(nums, <span class="nu">2</span>));       <span class="cm">// [1, 2]</span>
+        <span class="ty">System</span>.out.<span class="nm">println</span>(<span class="nm">topKFrequentStream</span>(nums, <span class="nu">2</span>)); <span class="cm">// [1, 2]</span>
+    }
+}</code></pre>
+      </div>
+
+      <div class="output-block"><div class="output-label">Output</div>[1, 2]  → 1 appears 3×, 2 appears 2×</div>
+
+      <div class="keypoints">
+        <div class="section-label">// key insight</div>
+        <ul>
+          <li><code style="color:var(--accent)">Map.merge(key, 1, Integer::sum)</code> — elegant one-liner frequency increment without getOrDefault boilerplate.</li>
+          <li><strong>Min-heap of size k</strong>: keep only the k largest frequencies. When heap exceeds k, poll() removes the minimum (least frequent), leaving only top-k at the end.</li>
+          <li>Min-heap approach: O(n log k) — better than sorting all n unique elements O(n log n) when k &lt;&lt; n.</li>
+          <li>Stream approach: simpler code, O(n log n) — perfect when code clarity is prioritized.</li>
+        </ul>
+      </div>
+      <div class="complexity-row">
+        <div class="complexity-pill"><span class="label">Heap Time</span> <span class="value">O(n log k)</span></div>
+        <div class="complexity-pill"><span class="label">Stream Time</span> <span class="value">O(n log n)</span></div>
+        <div class="complexity-pill"><span class="label">Space</span> <span class="value">O(n)</span></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>// java-interview-prep · 10 questions · streams · arrays · collections · dp</footer>
+</div>
+</body>
+</html>
